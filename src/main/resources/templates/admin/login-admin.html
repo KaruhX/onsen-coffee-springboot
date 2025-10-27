@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Onsen Coffee</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'onsen': {
+                            50: '#f7fdf7',
+                            100: '#e8f5e8',
+                            200: '#d3ead3',
+                            300: '#afd6af',
+                            400: '#7fb87f',
+                            500: '#5a9b5a',
+                            600: '#4a7c4a',
+                            700: '#3d623d',
+                            800: '#345034',
+                            900: '#2d422d'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-gray-50 via-onsen-50 to-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-onsen-600 rounded-full mb-4 shadow-lg">
+                <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Acceso Administrativo</h1>
+            <p class="text-gray-600">Ingrese sus credenciales para continuar</p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-xl p-8">
+            <div th:if="${error}" class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                    <p class="text-red-700 font-medium" th:text="${error}"></p>
+                </div>
+            </div>
+
+            <form th:action="@{/admin/doLogin}" method="post" class="space-y-6">
+                <div>
+                    <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Contraseña de Administrador
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            required
+                            placeholder="Ingrese la contraseña"
+                            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-onsen-500 focus:border-transparent transition-all duration-200 outline-none"
+                            autofocus
+                        />
+                    </div>
+                </div>
+
+                <button
+                    type="submit"
+                    class="w-full bg-onsen-600 hover:bg-onsen-700 text-white font-semibold py-3 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+                >
+                    Iniciar Sesión
+                </button>
+            </form>
+
+            <div class="mt-6 pt-6 border-t border-gray-200">
+                <a href="/" class="flex items-center justify-center text-sm text-gray-600 hover:text-onsen-600 transition-colors">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Volver al inicio
+                </a>
+            </div>
+        </div>
+
+        <div class="text-center mt-6 text-sm text-gray-600">
+            <p>Onsen Coffee - Panel de Administración</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+let LOGGED_USER = "";
+
+let COFFEE_CARD_TEMPLATE = "";
+let REGISTER_TEMPLATE = "";
+let LOGIN_TEMPLATE = "";

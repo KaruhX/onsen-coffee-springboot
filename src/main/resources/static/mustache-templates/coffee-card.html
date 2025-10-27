@@ -1,0 +1,59 @@
+<div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group">
+    <div class="relative h-56 bg-gradient-to-br from-onsen-100 to-onsen-200 flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+        <img src="show-image?id={{id}}"
+             onerror="this.src='https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=400&h=400&fit=crop&q=80'"
+             alt="{{coffee_type}}"
+             class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105">        {{#highStock}}
+        <span class="absolute top-4 right-4 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">En Stock</span>
+        {{/highStock}}
+        {{#lowStock}}
+        <span class="absolute top-4 right-4 bg-yellow-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">Pocas Unidades</span>
+        {{/lowStock}}
+        {{#outOfStock}}
+        <span class="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">Agotado</span>
+        {{/outOfStock}}
+    </div>
+
+    <div class="p-6">
+        <div class="flex justify-between items-start mb-3">
+            <h3 class="text-2xl font-bold text-gray-900 group-hover:text-onsen-600 transition-colors">{{coffee_type}}</h3>
+            <span class="text-2xl font-bold text-onsen-600">{{price}} €</span>
+        </div>
+
+        <div class="space-y-2 mb-4">
+            <div class="flex items-center text-sm text-gray-600">
+                <svg class="w-4 h-4 mr-2 text-onsen-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                </svg>
+                <span class="font-medium">{{origin}}</span>
+            </div>
+            <div class="flex items-center text-sm text-gray-600">
+                <svg class="w-4 h-4 mr-2 text-onsen-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 01.894 1.79l-1.233.616 1.738 5.42a1 1 0 01-.285 1.05A3.989 3.989 0 0115 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.715-5.349L11 6.477V16h2a1 1 0 110 2H7a1 1 0 110-2h2V6.477L6.237 7.582l1.715 5.349a1 1 0 01-.285 1.05A3.989 3.989 0 015 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.738-5.42-1.233-.617a1 1 0 01.894-1.788l1.599.799L9 4.323V3a1 1 0 011-1z"/>
+                </svg>
+                <span>{{altitude}}m de altitud</span>
+            </div>
+        </div>
+
+        <p class="text-gray-600 text-sm mb-4 line-clamp-2">{{description}}</p>
+
+        <div class="mb-4">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-medium text-gray-700">Nivel de Amargura</span>
+            </div>
+            <div class="flex gap-1">
+                {{#stars}}
+                <div class="h-2 w-full rounded-full {{class}}"></div>
+                {{/stars}}
+            </div>
+        </div>
+
+        <button onclick="comprarCafe('{{coffee_type}}', {{id}})"
+                class="w-full py-3 px-4 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 {{buttonClass}}"
+                {{#outOfStock}}disabled{{/outOfStock}}>
+            {{buttonText}}
+        </button>
+    </div>
+</div>
+
