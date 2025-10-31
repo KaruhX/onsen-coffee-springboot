@@ -38,4 +38,9 @@ public class RestCart {
 			return "error " + e.getMessage();
 		}
 	}
+
+	@RequestMapping("/obtain")
+	public String obtain () {
+		return "TODO";
+	}
 }

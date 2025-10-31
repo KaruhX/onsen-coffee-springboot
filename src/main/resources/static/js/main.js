@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnProductos = document.getElementById('btn-productos');
     const btnLogin = document.getElementById('btn-login');
     const btnRegistro = document.getElementById('btn-registro');
+    const btnCarrito = document.getElementById('btn-carrito');
     const contenedor = document.getElementById('contenedor');
 
     if (btnProductos) {
@@ -54,5 +55,21 @@ document.addEventListener('DOMContentLoaded', () => {
             btnLogin?.classList.remove("text-onsen-600", "font-medium", "border-b-2", "border-onsen-600");
             btnLogin?.classList.add("text-gray-600");
         });
+    }
+    if (btnCarrito) {
+        btnCarrito.addEventListener('click', (e) => {
+            e.preventDefault();
+            mostrarCarrito();
+
+            // Actualizar navegación activa
+            btnCarrito.classList.add("text-onsen-600", "font-medium", "border-b-2", "border-onsen-600");
+            btnCarrito.classList.remove("text-gray-600");
+            btnProductos?.classList.remove("text-onsen-600", "font-medium", "border-b-2", "border-onsen-600");
+            btnProductos?.classList.add("text-gray-600");
+            btnLogin?.classList.remove("text-onsen-600", "font-medium", "border-b-2", "border-onsen-600");
+            btnLogin?.classList.add("text-gray-600");
+            btnRegistro?.classList.remove("text-onsen-600", "font-medium", "border-b-2", "border-onsen-600");
+            btnRegistro?.classList.add("text-gray-600");
+        })
     }
 });

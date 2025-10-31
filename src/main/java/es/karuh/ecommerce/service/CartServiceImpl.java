@@ -16,7 +16,7 @@ public class CartServiceImpl implements CartService {
 	private EntityManager em;
 
 	@Override
-	public void addProduct(int userId, int productId, int quantity) {
+		public void addProduct(int userId, int productId, int quantity) {
 		User user = em.find(User.class, userId);
 		if (user == null) {
 			throw new RuntimeException("Usuario no encontrado: " + userId);

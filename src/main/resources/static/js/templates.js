@@ -18,3 +18,10 @@ fetch("mustache-templates/login.html")
         LOGIN_TEMPLATE = template;
     })
     .catch(error => console.error('Error cargando template login:', error));
+
+fetch("mustache-templates/cart.html")
+    .then(response => response.text())
+    .then(template => {
+        CART_TEMPLATE = template;
+    })
+    .catch(error => console.error('Error cargando template cart:', error));

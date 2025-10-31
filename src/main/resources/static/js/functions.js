@@ -2,8 +2,7 @@ const comprarCafe = (nombreCafe, idCafe) => {
     if (LOGGED_USER !== "") {
         // Usar Fetch API en lugar de jQuery
         fetch("api/cart/add?productId=" + idCafe + "&quantity=1", {
-            method: 'POST',
-            headers: {
+            method: 'POST', headers: {
                 'Content-Type': 'application/json'
             }
         })
@@ -265,3 +264,51 @@ const mostrarRegistro = () => {
         mostrarLogin();
     });
 };
+
+const mostrarCarrito = () => {
+    const contenedor = document.getElementById("contenedor");
+    contenedor.classList.remove("grid", "grid-cols-1", "md:grid-cols-2", "lg:grid-cols-3", "gap-8");
+    contenedor.innerHTML = CART_TEMPLATE;
+
+    // Actualizar navegación activa
+    document.getElementById('btn-productos')?.classList.remove("text-onsen-600", "font-medium", "border-b-2", "border-onsen-600");
+    document.getElementById('btn-productos')?.classList.add("text-gray-600");
+    document.getElementById('btn-login')?.classList.remove("text-onsen-600", "font-medium", "border-b-2", "border-onsen-600");
+    document.getElementById('btn-login')?.classList.add("text-gray-600");
+
+    const cartContainer = document.getElementById("cart-container");
+
+    if (LOGGED_USER === "") {
+        cartContainer.innerHTML = '<div class="col-span-full text-center py-16"><div class="text-6xl text-gray-300 mb-6">🛒</div><h3 class="text-xl font-medium text-gray-600 mb-2">Debes iniciar sesión para ver el carrito</h3><p class="text-gray-500">Por favor, inicia sesión o regístrate</p></div>';
+    } else {
+        cartContainer.innerHTML = '<div class="flex items-center justify-center py-20"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-onsen-600"></div></div>';
+        fetch("api/cart/obtain")
+            .then(response => response.json())
+            .then(cartItems => {
+                if (!cartItems || cartItems.length === 0) {
+                    cartContainer.innerHTML = '<div class="col-span-full text-center py-16"><div class="text-6xl text-gray-300 mb-6">🛒</div><h3 class="text-xl font-medium text-gray-600 mb-2">Tu carrito está vacío</h3><p class="text-gray-500">Añade productos para verlos aquí</p></div>';
+                    return;
+                }
+                let html = '';
+                cartItems.forEach(item => {
+                    html += `
+                    <div class="border border-gray-200 rounded-lg p-4 mb-4 flex justify-between items-center">
+                        <div>
+                            <h4 class="text-lg font-medium text-gray-800">${item.coffee_type}</h4>
+                            <p class="text-gray-600">Cantidad: ${item.quantity}</p>
+                            <p class="text-gray-600">Precio Unitario: €${item.price.toFixed(2)}</p>
+                        </div>
+                        <div class="text-lg font-semibold text-gray-800">
+                            Total: €${(item.price * item.quantity).toFixed(2)}
+                        </div>
+                    </div>`;
+                });
+                cartContainer.innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                cartContainer.innerHTML = '<div class="col-span-full text-center py-16"><div class="text-red-500 text-lg font-medium">Error de conexión</div><p class="text-gray-600 mt-2">No se pudo conectar con el servidor</p></div>';
+            })
+    }
+        }
+
