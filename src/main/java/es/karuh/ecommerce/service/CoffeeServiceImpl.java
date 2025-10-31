@@ -1,8 +1,8 @@
 package es.karuh.ecommerce.service;
 
+import es.karuh.ecommerce.consts.SQLConsts;
 import es.karuh.ecommerce.model.Coffee;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -139,27 +139,20 @@ public class CoffeeServiceImpl implements CoffeeService {
 	}
 
 	@Override
-	public List<Map<String,Object>> getCoffeesJSON() {
-		// Ejecutamos la consulta nativa que ya no contiene TO_BASE64
-		List<Object[]> rows = em.createNativeQuery(es.karuh.ecommerce.consts.SQLConsts.SQL_OBTAIN_JSON_BOOKS).getResultList();
-		List<Map<String,Object>> result = new ArrayList<>();
+	public List<Map<String, Object>> getCoffeesJSON() {
+		Query query = em.createNativeQuery(SQLConsts.SQL_OBTAIN_JSON_COFFEE, Tuple.class);
+		List<Tuple> tuples = query.getResultList();
 
-		for (Object rowObj : rows) {
-			Object[] row = (Object[]) rowObj;
-			Map<String,Object> map = new HashMap<>();
-			map.put("id", ((Number)row[0]).intValue());
-			map.put("coffee_type", row[1]);
-			map.put("origin", row[2]);
-			map.put("altitude", row[3]);
-			map.put("bitterness_level", row[4]);
-			map.put("price", row[5]);
-			map.put("description", row[6]);
-			map.put("stock", row[7]);
-
-			result.add(map);
+		List<Map<String, Object>> resultado = new ArrayList<>();
+		for (Tuple tuple : tuples) {
+			Map<String, Object> fila = new HashMap<>();
+			for (TupleElement<?> element : tuple.getElements()) {
+				String normalizedAlias = element.getAlias().toLowerCase();
+				fila.put(normalizedAlias, tuple.get(element));
+			}
+			resultado.add(fila);
 		}
-
-		return result;
+		return resultado;
 	}
 
 }

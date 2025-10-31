@@ -25,6 +25,9 @@ public class UserController {
     @GetMapping("/editUser")
     public String editUser(@RequestParam("id") Integer id, Model model) {
         User user = userService.getUserByID(id);
+        if (user == null) {
+            user = new User();
+        }
         model.addAttribute("user", user);
         return "admin/user-edit";
     }

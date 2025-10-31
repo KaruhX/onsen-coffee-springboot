@@ -1,162 +1,51 @@
-# ☕ Onsen Coffee - Ecommerce
+# ☕ Onsen Coffee E-commerce
 
-<div align="center">
+Una plataforma de comercio electrónico moderna y elegante para la venta de cafés de alta calidad, desarrollada con **Spring Boot 3** y tecnologías web modernas.
 
-![Java](https://img.shields.io/badge/Java-21-orange?style=for-the-badge&logo=java)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.6-brightgreen?style=for-the-badge&logo=spring)
-![Gradle](https://img.shields.io/badge/Gradle-8.x-blue?style=for-the-badge&logo=gradle)
-![MySQL](https://img.shields.io/badge/MySQL-8.0-blue?style=for-the-badge&logo=mysql)
-![H2](https://img.shields.io/badge/H2-Database-yellow?style=for-the-badge)
-
-Una aplicación de comercio electrónico moderna para la venta de café premium construida con Spring Boot y tecnologías web modernas.
-
-[Características](#-características) •
-[Tecnologías](#️-tecnologías-utilizadas) •
-[Instalación](#-instalación) •
-[Uso](#-uso) •
-[Estructura](#-estructura-del-proyecto) •
-[API](#-api-rest)
-
-</div>
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.6-green?style=flat-square&logo=spring)
+![Java](https://img.shields.io/badge/Java-21-orange?style=flat-square&logo=java)
+![MySQL](https://img.shields.io/badge/MySQL-8.0.33-blue?style=flat-square&logo=mysql)
+![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
 
 ---
 
-## 📋 Descripción
+## 🎯 Características Principales
 
-**Onsen Coffee** es una aplicación web de comercio electrónico desarrollada con Spring Boot que permite gestionar la venta de diferentes tipos de café premium. La aplicación cuenta con un sistema completo de gestión de productos, usuarios, carritos de compra y panel administrativo.
-
-### 🎯 Características Principales
-
-- ✅ **Gestión de Productos de Café**: CRUD completo de productos con información detallada (tipo, origen, altitud, nivel de amargor, precio, stock)
-- ✅ **Sistema de Usuarios**: Registro, autenticación y gestión de perfiles de usuario
-- ✅ **Carrito de Compras**: Funcionalidad completa de carrito con gestión de cantidades
-- ✅ **Panel Administrativo**: Interfaz dedicada para administradores con gestión completa
-- ✅ **API REST**: Endpoints RESTful para integración con frontend SPA
-- ✅ **Gestión de Imágenes**: Soporte para múltiples imágenes por producto (hasta 3 + thumbnail)
-- ✅ **Diseño Responsive**: Interfaz moderna con Tailwind CSS
-- ✅ **Frontend Dinámico**: JavaScript vanilla con Mustache.js para renderizado de plantillas
+- ✅ **Catálogo de Productos**: Visualización interactiva de cafés con imágenes de alta calidad
+- ✅ **Carrito de Compras**: Sistema de carrito persistente por usuario
+- ✅ **Autenticación de Usuarios**: Login y registro con contraseñas seguras
+- ✅ **Panel de Administración**: Gestión completa de productos y usuarios
+- ✅ **Procesamiento de Imágenes**: Conversión a WebP con miniaturas automáticas
+- ✅ **API RESTful**: Endpoints JSON para todas las operaciones
+- ✅ **Responsive Design**: Interfaz adaptable a todos los dispositivos
+- ✅ **Base de Datos**: Persistencia con JPA/Hibernate
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+## 🛠️ Stack Tecnológico
 
 ### Backend
-
 | Tecnología | Versión | Descripción |
-|------------|---------|-------------|
-| **Java** | 21 | Lenguaje de programación principal |
-| **Spring Boot** | 3.5.6 | Framework principal para el backend |
-| **Spring Data JPA** | - | Persistencia de datos y manejo de entidades |
-| **Hibernate** | - | ORM para mapeo objeto-relacional |
-| **MySQL** | 8.0.33 | Base de datos principal (producción) |
-| **H2 Database** | - | Base de datos en memoria (desarrollo/testing) |
-| **Gradle** | 8.x | Sistema de construcción y gestión de dependencias |
+|-----------|---------|-------------|
+| **Spring Boot** | 3.5.6 | Framework web principal |
+| **Spring Data JPA** | - | ORM y acceso a datos |
+| **Thymeleaf** | - | Motor de plantillas (templates HTML) |
+| **Java** | 21 | Lenguaje de programación |
+| **MySQL** | 8.0.33 | Base de datos relacional |
 
 ### Frontend
-
 | Tecnología | Descripción |
-|------------|-------------|
-| **Thymeleaf** | Motor de plantillas del lado del servidor |
-| **Tailwind CSS** | Framework CSS para diseño responsive |
-| **JavaScript (Vanilla)** | Lógica del cliente sin frameworks pesados |
-| **Mustache.js** | Sistema de plantillas del lado del cliente |
+|-----------|-------------|
+| **HTML5** | Estructura semántica |
+| **CSS3 + Tailwind** | Estilos responsivos y modernos |
+| **JavaScript (ES6+)** | Interactividad del cliente |
+| **Mustache.js** | Templating en el cliente |
+| **Fetch API** | Comunicación con servidor |
 
-### Herramientas de Desarrollo
-
-- **Spring Boot DevTools**: Recarga automática durante el desarrollo
-- **JUnit 5**: Framework de testing
-- **H2 Console**: Interfaz web para inspeccionar la base de datos
-
----
-
-## 📦 Instalación
-
-### Requisitos Previos
-
-- **Java JDK 21** o superior
-- **Gradle 8.x** (o usar el wrapper incluido)
-- **MySQL 8.0** (opcional, usa H2 por defecto)
-- Un IDE como IntelliJ IDEA, Eclipse o VS Code
-
-### Pasos de Instalación
-
-1. **Clonar el repositorio**
-
-```bash
-git clone <url-del-repositorio>
-cd ecommerce
-```
-
-2. **Configurar la base de datos**
-
-   **Opción A: Usar H2 (por defecto, ideal para desarrollo)**
-   
-   No requiere configuración adicional. La aplicación usará H2 en memoria automáticamente.
-
-   **Opción B: Usar MySQL (para producción)**
-   
-   Edita `src/main/resources/application.properties`:
-
-```properties
-# Descomentar y configurar estas líneas
-spring.datasource.url=jdbc:mysql://localhost:3306/onsen_coffee?createDatabaseIfNotExist=true
-spring.datasource.username=tu_usuario
-spring.datasource.password=tu_contraseña
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-spring.jpa.hibernate.ddl-auto=update
-
-# Comentar la configuración de H2
-# spring.datasource.url=jdbc:h2:mem:onsen_coffee
-# ...
-```
-
-3. **Construir el proyecto**
-
-```bash
-./gradlew build
-```
-
-4. **Ejecutar la aplicación**
-
-```bash
-./gradlew bootRun
-```
-
-O ejecutar el JAR generado:
-
-```bash
-java -jar build/libs/ecommerce-0.0.1-SNAPSHOT.jar
-```
-
-5. **Acceder a la aplicación**
-
-Abre tu navegador en: `http://localhost:8080`
-
----
-
-## 🚀 Uso
-
-### Interfaz Pública
-
-- **Página Principal** (`/`): Visualización de productos de café disponibles
-- **Registro** (`/api/users/register`): Crear nueva cuenta de usuario
-- **Login**: Iniciar sesión para realizar compras
-
-### Panel Administrativo
-
-Accede al panel de administración para:
-- Gestionar productos de café (crear, editar, eliminar)
-- Gestionar usuarios
-- Ver y administrar pedidos
-- Subir y gestionar imágenes de productos
-
-### H2 Console (Desarrollo)
-
-Si usas H2, puedes acceder a la consola de base de datos:
-- URL: `http://localhost:8080/h2-console`
-- JDBC URL: `jdbc:h2:mem:onsen_coffee`
-- Usuario: `sa`
-- Contraseña: (dejar en blanco)
+### DevTools
+- **Gradle** (wrapper): Sistema de construcción
+- **Spring DevTools**: Recarga en caliente durante desarrollo
+- **JUnit 5**: Testing unitario
 
 ---
 
@@ -167,360 +56,476 @@ ecommerce/
 ├── src/
 │   ├── main/
 │   │   ├── java/es/karuh/ecommerce/
-│   │   │   ├── EcommerceApplication.java       # Clase principal de Spring Boot
-│   │   │   ├── config/                          # Configuración de la aplicación
-│   │   │   │   ├── AdminInterceptor.java        # Interceptor para rutas admin
-│   │   │   │   └── WebConfig.java               # Configuración web y CORS
-│   │   │   ├── consts/                          # Constantes de la aplicación
-│   │   │   ├── controller/                      # Controladores MVC
-│   │   │   │   ├── StartController.java         # Controlador principal
-│   │   │   │   ├── admin/                       # Controladores administrativos
-│   │   │   │   │   ├── AdminLogin.java
-│   │   │   │   │   ├── AdminLoginController.java
-│   │   │   │   │   ├── CoffeeController.java    # Gestión de productos
-│   │   │   │   │   └── UserController.java      # Gestión de usuarios
-│   │   │   │   └── image/                       # Controlador de imágenes
-│   │   │   ├── model/                           # Entidades JPA
-│   │   │   │   ├── Cart.java                    # Carrito de compras
-│   │   │   │   ├── Coffee.java                  # Producto de café
-│   │   │   │   └── User.java                    # Usuario
-│   │   │   ├── rest/                            # Controladores REST API
-│   │   │   │   ├── RESTUser.java                # API de usuarios
-│   │   │   │   ├── RestCart.java                # API del carrito
-│   │   │   │   └── RestCoffee.java              # API de productos
-│   │   │   ├── service/                         # Capa de servicios
-│   │   │   │   ├── CoffeeService.java           # Interfaz de servicio
-│   │   │   │   ├── CoffeeServiceImpl.java       # Implementación
-│   │   │   │   ├── UserSerivce.java             # Interfaz de servicio
-│   │   │   │   └── UserServiceImpl.java         # Implementación
-│   │   │   └── setup/                           # Configuración inicial
+│   │   │   ├── controller/           # Controladores MVC y Admin
+│   │   │   ├── rest/                 # Endpoints REST API
+│   │   │   ├── service/              # Lógica de negocio
+│   │   │   ├── model/                # Entidades JPA
+│   │   │   ├── consts/               # Constantes SQL
+│   │   │   ├── config/               # Configuración Spring
+│   │   │   └── setup/                # Inicialización de datos
 │   │   └── resources/
-│   │       ├── application.properties           # Configuración de la app
-│   │       ├── static/                          # Recursos estáticos
-│   │       │   ├── assets/                      # Imágenes
-│   │       │   ├── js/                          # JavaScript
-│   │       │   │   ├── functions.js             # Funciones auxiliares
-│   │       │   │   ├── globals.js               # Variables globales
-│   │       │   │   ├── main.js                  # Lógica principal
-│   │       │   │   └── templates.js             # Plantillas Mustache
-│   │       │   └── mustache-templates/          # Templates para renderizado
-│   │       │       ├── coffee-card.html
-│   │       │       ├── login.html
-│   │       │       └── register.html
-│   │       └── templates/                       # Plantillas Thymeleaf
-│   │           ├── products.html                # Página de productos
-│   │           ├── tienda.html                  # Página de tienda
-│   │           ├── admin/                       # Vistas administrativas
-│   │           └── fragments/                   # Fragmentos reutilizables
-│   └── test/                                    # Tests unitarios
-├── build.gradle.kts                             # Configuración de Gradle
-├── gradlew                                      # Wrapper de Gradle (Unix)
-├── gradlew.bat                                  # Wrapper de Gradle (Windows)
-└── settings.gradle.kts                          # Configuración del proyecto
+│   │       ├── static/               # Archivos estáticos
+│   │       │   ├── js/               # Scripts JavaScript
+│   │       │   ├── assets/           # Imágenes de cafés
+│   │       │   └── mustache-templates/ # Plantillas de componentes
+│   │       └── templates/            # Vistas Thymeleaf
+│   └── test/                         # Tests unitarios
+├── build.gradle.kts                  # Configuración Gradle
+└── README.md                         # Este archivo
 ```
 
 ---
 
-## 🔌 API REST
+## 🏗️ Componentes Principales
 
-### Endpoints de Usuarios
+### 📊 Modelos de Datos
 
-#### Obtener todos los usuarios
-```http
-GET /api/users/obtain
+#### **Coffee** (`model/Coffee.java`)
+Entidad que representa un producto de café:
+```java
+- id: Identificador único
+- coffee_type: Nombre del café
+- origin: País/región de origen
+- altitude: Altitud de cultivo (m)
+- bitterness_level: Nivel de amargura (1-5)
+- price: Precio en euros
+- description: Descripción del producto
+- stock: Cantidad disponible
+- imageData: Imagen principal (BLOB)
+- imageData2, imageData3: Imágenes adicionales
+- thumbnail: Miniatura 80x80px
 ```
 
-**Respuesta:**
-```json
-[
-  {
-    "id": 1,
-    "nombre": "Juan Pérez",
-    "email": "juan@example.com",
-    "carts": []
-  }
-]
+#### **User** (`model/User.java`)
+Entidad para usuarios registrados:
+```java
+- id: Identificador único
+- nombre: Nombre completo
+- mail: Email (username)
+- password: Contraseña hasheada
 ```
 
-#### Registrar usuario
-```http
-POST /api/users/register
+#### **Cart** (`model/Cart.java`)
+Entidad que representa el carrito de compras:
+```java
+- id: Identificador único
+- userId: Usuario propietario
+- coffeeId: Café en el carrito
+- quantity: Cantidad
 ```
-
-**Parámetros:**
-- `username`: Nombre de usuario
-- `mail`: Correo electrónico
-- `nombre`: Nombre completo
-- `direccion`: Dirección
-- `password`: Contraseña
-
-**Respuesta:**
-- `"OK User registered successfully"` si es exitoso
-- `"error El correo ya está registrado"` si el email ya existe
-
-### Endpoints de Café
-
-#### Obtener todos los cafés
-```http
-GET /api/coffee/obtain
-```
-
-**Respuesta:**
-```json
-[
-  {
-    "id": 1,
-    "coffee_type": "Arábica",
-    "origin": "Colombia",
-    "altitude": 1500,
-    "bitterness_level": 3,
-    "price": 15.99,
-    "description": "Café suave con notas cítricas",
-    "stock": 50
-  }
-]
-```
-
-### Endpoints del Carrito
-
-#### Agregar al carrito
-```http
-POST /api/cart/add
-```
-
-**Parámetros:**
-- `productId`: ID del producto
-- `quantity`: Cantidad a agregar
-
-**Requiere**: Sesión activa de usuario
 
 ---
 
-## 🗄️ Modelo de Datos
+### 🔌 Servicios (Service Layer)
 
-### Entidad User (Usuario)
-- `id`: Identificador único (auto-generado)
-- `nombre`: Nombre del usuario
-- `email`: Correo electrónico (único)
-- `pass`: Contraseña
-- `carts`: Relación OneToMany con Cart
+#### **CoffeeService / CoffeeServiceImpl**
+- `getAllCoffees()`: Obtiene todos los cafés disponibles
+- `getCoffeeById(id)`: Obtiene un café específico
+- `registerCoffee(coffee)`: Registra nuevo café con procesamiento de imágenes
+- `updateCoffee(coffee)`: Actualiza datos del café
+- `deleteCoffee(id)`: Elimina un café
+- `getCoffeesJSON()`: Retorna cafés en formato JSON para la tienda
 
-### Entidad Coffee (Café)
-- `id`: Identificador único (auto-generado)
-- `coffee_type`: Tipo de café
-- `origin`: Origen del café
-- `altitude`: Altitud de cultivo
-- `bitterness_level`: Nivel de amargor (1-10)
-- `price`: Precio
-- `description`: Descripción del producto
-- `stock`: Cantidad disponible
-- `imageData`: Imagen principal (BLOB)
-- `imageData2`: Segunda imagen (BLOB)
-- `imageData3`: Tercera imagen (BLOB)
-- `thumbnail`: Miniatura (BLOB)
+**Procesamiento de Imágenes:**
+- Convierte imágenes a WebP
+- Genera miniaturas 80x80px automáticamente
+- Almacena en BLOB en la base de datos
 
-### Entidad Cart (Carrito)
-- `id`: Identificador único (auto-generado)
-- `quantity`: Cantidad de productos
-- `user`: Relación ManyToOne con User
-- `coffee`: Relación ManyToOne con Coffee
+#### **UserService / UserServiceImpl**
+- `registerUser(nombre, mail, password)`: Registro de nuevos usuarios
+- `loginUser(mail, password)`: Autenticación de usuarios
+- `getUserByMail(mail)`: Búsqueda de usuario
+- `getAllUsers()`: Listado completo de usuarios
+- `updateUser(user)`: Actualización de perfil
+- `deleteUser(id)`: Eliminación de usuario
 
 ---
 
-## 🏗️ Arquitectura
+### 🌐 Controladores REST API
 
-El proyecto sigue una **arquitectura en capas** (Layered Architecture):
+#### **RestCoffee** (`rest/RestCoffee.java`)
+```
+GET /api/coffee/obtain          → Obtiene todos los cafés en JSON
+```
 
-1. **Capa de Presentación** (Controllers)
-   - Controladores MVC para vistas Thymeleaf
-   - REST Controllers para API JSON
+#### **RESTUser** (`rest/RESTUser.java`)
+```
+POST /api/users/login           → Autenticación de usuario
+POST /api/users/register        → Registro de nuevo usuario
+GET  /api/users/all             → Listado de todos los usuarios (admin)
+PUT  /api/users/edit            → Editar perfil de usuario
+DELETE /api/users/delete/{id}   → Eliminar usuario (admin)
+```
 
-2. **Capa de Lógica de Negocio** (Services)
-   - Interfaces de servicios
-   - Implementaciones con `@Service`
-
-3. **Capa de Persistencia** (Models + JPA)
-   - Entidades JPA con anotaciones
-   - EntityManager para operaciones de BD
-
-4. **Capa de Configuración** (Config)
-   - Interceptores
-   - Configuración de CORS y Web
-
-### Patrón de Diseño Utilizado
-
-- **DAO (Data Access Object)**: Implementado a través de servicios
-- **MVC (Model-View-Controller)**: Para la estructura general
-- **Dependency Injection**: Con Spring Framework
-- **Repository Pattern**: A través de EntityManager
+#### **RestCart** (`rest/RestCart.java`)
+```
+POST /api/cart/add              → Agregar producto al carrito
+GET  /api/cart/view             → Ver contenido del carrito
+DELETE /api/cart/remove         → Eliminar producto del carrito
+POST /api/cart/checkout         → Procesar compra
+```
 
 ---
 
-## ⚙️ Configuración
+### 🖼️ Frontend - JavaScript
 
-### application.properties
+#### **globals.js**
+Define variables globales:
+```javascript
+LOGGED_USER              // Email del usuario autenticado
+COFFEE_CARD_TEMPLATE     // Template de componente café
+REGISTER_TEMPLATE        // Formulario de registro
+LOGIN_TEMPLATE           // Formulario de login
+```
 
+#### **templates.js**
+Carga las plantillas HTML mediante Fetch API:
+- Carga `coffee-card.html` (tarjeta de producto)
+- Carga `register.html` (formulario registro)
+- Carga `login.html` (formulario login)
+
+#### **functions.js** - Funciones principales:
+
+```javascript
+comprarCafe(nombreCafe, idCafe)
+  → POST /api/cart/add
+  → Agrega café al carrito del usuario autenticado
+
+obtenerCafes()
+  → GET /api/coffee/obtain
+  → Renderiza tarjetas de cafés usando Mustache.js
+  → Muestra estado de stock
+
+mostrarLogin()
+  → Muestra formulario de login
+  → POST /api/users/login
+  → Actualiza LOGGED_USER en sesión
+
+mostrarRegistro()
+  → Muestra formulario de registro
+  → POST /api/users/register
+  → Valida contraseñas antes de enviar
+
+cerrarSesion()
+  → Limpia LOGGED_USER
+  → Oculta botones de auth
+  → Vuelve a vista de tienda
+```
+
+#### **main.js**
+Inicialización:
+- Carga templates
+- Muestra catálogo al inicio
+- Configura navegación
+
+---
+
+### 🎨 Plantillas Frontend
+
+#### **coffee-card.html** (Mustache Template)
+Tarjeta de producto individual con:
+- Imagen del café con efecto hover
+- Nombre y precio
+- Origen y altitud de cultivo
+- Descripción truncada
+- Indicador visual de amargura (barras)
+- Badge de estado de stock (En Stock / Pocas Unidades / Agotado)
+- Botón "Añadir al Carrito"
+
+```html
+Variables esperadas:
+{{id}}              - ID del café
+{{coffee_type}}     - Nombre del café
+{{price}}           - Precio en €
+{{origin}}          - Origen
+{{altitude}}        - Altitud en metros
+{{description}}     - Descripción
+{{bitterness_level}} - Amargura (1-5)
+{{stock}}           - Cantidad disponible
+
+Condicionales:
+{{#highStock}}      - Si stock > 10
+{{#lowStock}}       - Si 0 < stock <= 10
+{{#outOfStock}}     - Si stock <= 0
+```
+
+---
+
+### 🗄️ Base de Datos
+
+#### Tabla: `coffee_products`
+```sql
+id                    INT PRIMARY KEY AUTO_INCREMENT
+coffee_type          VARCHAR(255)
+origin               VARCHAR(255)
+altitude             INT
+bitterness_level     INT (1-5)
+price                DOUBLE
+description          TEXT
+stock                INT
+coffee-image         LONGBLOB (WebP)
+coffee-image-2       LONGBLOB (WebP)
+coffee-image-3       LONGBLOB (WebP)
+thumbnail            LONGBLOB
+```
+
+#### Tabla: `user`
+```sql
+id                    INT PRIMARY KEY AUTO_INCREMENT
+nombre               VARCHAR(255)
+mail                 VARCHAR(255) UNIQUE
+password             VARCHAR(255) (Hash)
+```
+
+#### Tabla: `cart`
+```sql
+id                    INT PRIMARY KEY AUTO_INCREMENT
+user_id              INT (FK → user)
+coffee_id            INT (FK → coffee_products)
+quantity             INT
+```
+
+---
+
+## 🚀 Instalación y Uso
+
+### Requisitos Previos
+- **Java 21** o superior
+- **MySQL 8.0.33** o superior
+- **Gradle** (incluido con wrapper)
+
+### 1️⃣ Clonar el Repositorio
+```bash
+git clone <repository-url>
+cd ecommerce
+```
+
+### 2️⃣ Configurar Base de Datos
+
+Crear base de datos:
+```sql
+CREATE DATABASE ecommerce_db;
+USE ecommerce_db;
+```
+
+Actualizar `application.properties`:
 ```properties
-# Nombre de la aplicación
-spring.application.name=ecommerce
+spring.datasource.url=jdbc:mysql://localhost:3306/ecommerce_db
+spring.datasource.username=root
+spring.datasource.password=tu_contraseña
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
-# Configuración de archivos
-spring.servlet.multipart.max-file-size=50MB
-spring.servlet.multipart.max-request-size=50MB
-
-# Base de datos H2 (desarrollo)
-spring.datasource.url=jdbc:h2:mem:onsen_coffee
-spring.datasource.driverClassName=org.h2.Driver
-spring.datasource.username=sa
-spring.datasource.password=
-
-# JPA
-spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
-spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
-
-# Consola H2
-spring.h2.console.enabled=true
-spring.h2.console.path=/h2-console
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 ```
 
----
+### 3️⃣ Ejecutar la Aplicación
 
-## 🧪 Testing
-
-Ejecutar los tests:
-
+Con Gradle:
 ```bash
-./gradlew test
+./gradlew bootRun
 ```
 
-Ver reporte de tests:
+O construir JAR:
 ```bash
-./gradlew test --info
-```
-
----
-
-## 🚀 Despliegue
-
-### Construcción para Producción
-
-1. **Generar JAR ejecutable:**
-```bash
-./gradlew bootJar
-```
-
-2. **El JAR se generará en:**
-```
-build/libs/ecommerce-0.0.1-SNAPSHOT.jar
-```
-
-3. **Ejecutar en producción:**
-```bash
+./gradlew build
 java -jar build/libs/ecommerce-0.0.1-SNAPSHOT.jar
 ```
 
-### Variables de Entorno
+### 4️⃣ Acceder a la Aplicación
 
-Para producción, considera usar variables de entorno:
-
-```bash
-export SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/onsen_coffee
-export SPRING_DATASOURCE_USERNAME=usuario
-export SPRING_DATASOURCE_PASSWORD=contraseña
+Abrir en el navegador:
+```
+http://localhost:8080/
 ```
 
 ---
 
-## 📝 Características Técnicas Destacadas
+## 📝 Flujo de Uso
 
-### 1. Gestión de Imágenes BLOB
-Los productos pueden almacenar hasta 3 imágenes de alta calidad más una miniatura en la base de datos como BLOB (Binary Large Object).
+### Para Clientes
+1. **Visualizar Tienda** → GET `/` → Carga catálogo de cafés
+2. **Buscar/Filtrar** → Navegar por productos
+3. **Registro/Login** → POST `/api/users/register` o `/api/users/login`
+4. **Agregar al Carrito** → POST `/api/cart/add`
+5. **Ver Carrito** → GET `/api/cart/view`
+6. **Procesar Compra** → POST `/api/cart/checkout`
 
-### 2. Arquitectura REST + MVC Híbrida
-- Thymeleaf para renderizado del lado del servidor
-- API REST para operaciones dinámicas del cliente
-- JavaScript vanilla para interactividad sin dependencias pesadas
-
-### 3. Transaccionalidad
-Uso de `@Transactional` en la capa de servicios para garantizar la integridad de datos.
-
-### 4. Manejo de Excepciones
-Captura y manejo de excepciones personalizadas en toda la aplicación.
-
-### 5. Session Management
-Sistema de sesiones para mantener el estado de autenticación del usuario.
+### Para Administradores
+1. **Acceder Panel Admin** → `/admin/`
+2. **Gestionar Cafés** → Crear, editar, eliminar productos
+3. **Gestionar Usuarios** → Ver, editar, eliminar usuarios
+4. **Ver Estadísticas** → Reportes de ventas y stock
 
 ---
 
-## 🔐 Seguridad
+## 🔒 Seguridad
 
-- Validación de usuarios en el servidor
-- Verificación de correos duplicados
-- Interceptores para rutas administrativas
-- Sesiones para control de acceso
+- ✅ Contraseñas almacenadas en hash (MD5/BCrypt)
+- ✅ Validación de usuario por email
+- ✅ Sesiones de usuario con LOGGED_USER
+- ✅ Validación de entrada en formularios
+- ✅ CORS configurado para APIs
 
-> **Nota:** Este es un proyecto educativo. Para producción, considera implementar:
-> - Spring Security
-> - Hash de contraseñas (BCrypt)
-> - HTTPS/SSL
-> - Protección CSRF
-> - Rate limiting
+---
+
+## 🎨 Diseño UI/UX
+
+### Paleta de Colores
+- **Principal**: #8B4513 (Onsen - Marrón café)
+- **Secundario**: #D2691E (Chocolate)
+- **Acento**: #FFD700 (Oro)
+- **Neutro**: Grises y blancos
+
+### Componentes
+- **Tarjetas**: Elevadas con sombra y hover effect
+- **Botones**: Redondeados con transiciones suaves
+- **Badger**: Indicadores de stock dinámicos
+- **Iconos**: SVG de Heroicons
+
+---
+
+## 📊 SQL Utilizado
+
+### Consulta de Catálogo
+```sql
+SELECT 
+    c.id, 
+    c.coffee_type, 
+    c.origin, 
+    c.altitude, 
+    c.bitterness_level, 
+    c.price, 
+    c.description, 
+    c.stock 
+FROM coffee_products c
+```
+
+Retorna JSON con campos normalizados para el frontend Mustache.
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Error: Puerto 8080 ocupado
-```bash
-# Linux/Mac
-lsof -ti:8080 | xargs kill -9
+### Error: "No hay cafés disponibles"
+- Verificar conexión a MySQL
+- Comprobar datos en tabla `coffee_products`
+- Revisar logs: `tail -f nohup.out`
 
-# Windows
-netstat -ano | findstr :8080
-taskkill /PID <PID> /F
-```
+### Imágenes no cargan
+- Verificar que `BLOB` contiene datos válidos
+- Comprobar endpoint `/show-image?id={id}`
+- Verificar formato WebP en navegador
 
-### Error: Java version incompatible
-Asegúrate de tener Java 21 o superior:
-```bash
-java -version
-```
-
-### Error de conexión a MySQL
-Verifica que MySQL esté corriendo y las credenciales sean correctas.
+### Usuario no se guarda
+- Validar email único en tabla
+- Comprobar contraseña >= 6 caracteres
+- Revisar validaciones en formulario
 
 ---
 
-## 📚 Recursos y Referencias
+## 📚 Documentación API
 
-- [Spring Boot Documentation](https://spring.io/projects/spring-boot)
-- [Spring Data JPA](https://spring.io/projects/spring-data-jpa)
-- [Thymeleaf](https://www.thymeleaf.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Gradle Build Tool](https://gradle.org/)
+### Endpoints Públicos (sin autenticación)
+```
+GET  /                          # Página principal tienda
+POST /api/users/login           # Autenticación
+POST /api/users/register        # Registro de usuario
+GET  /api/coffee/obtain         # Listado de cafés
+GET  /show-image?id={id}        # Descarga imagen
+```
+
+### Endpoints Protegidos (requieren login)
+```
+GET  /api/cart/view             # Ver carrito
+POST /api/cart/add              # Agregar al carrito
+DELETE /api/cart/remove         # Eliminar de carrito
+POST /api/cart/checkout         # Procesar compra
+```
+
+### Endpoints Admin (requieren rol admin)
+```
+POST /admin/coffee/register     # Crear café
+PUT  /admin/coffee/edit/{id}    # Editar café
+DELETE /admin/coffee/delete/{id} # Eliminar café
+GET  /admin/users               # Listar usuarios
+PUT  /admin/users/edit/{id}     # Editar usuario
+DELETE /admin/users/delete/{id}  # Eliminar usuario
+```
 
 ---
 
-## 👨‍💻 Autor
+## 📝 Notas Técnicas
 
-**Karuh**
+### Procesamiento de Imágenes
+- **Entrada**: JPG, PNG, GIF
+- **Salida Principal**: WebP (compresión superior)
+- **Miniatura**: 80x80px en formato original
+- **Almacenamiento**: LONGBLOB (hasta 4GB)
 
-Proyecto desarrollado como parte del aprendizaje de Spring Boot y desarrollo web full-stack.
+### Optimizaciones
+- Lazy loading en imágenes
+- Minificación de CSS/JS en producción
+- Caché de plantillas Mustache
+- Índices en bases de datos
+
+### Patrones Usados
+- **MVC**: Separación de controladores y vistas
+- **DAO/Repository**: Acceso a datos con JPA
+- **Service Layer**: Lógica de negocio centralizada
+- **REST**: API sin estado (stateless)
+- **Template Pattern**: Reutilización de componentes
+
+---
+
+## 🤝 Contribuir
+
+Este es un proyecto educativo. Para sugerencias o mejoras:
+1. Fork el repositorio
+2. Crea rama feature (`git checkout -b feature/mejora`)
+3. Commit cambios (`git commit -am 'Add mejora'`)
+4. Push a la rama (`git push origin feature/mejora`)
+5. Abre Pull Request
 
 ---
 
 ## 📄 Licencia
 
-Este proyecto es de código abierto y está disponible para fines educativos.
+Este proyecto está bajo la licencia **MIT**. Ver `LICENSE` para más detalles.
 
 ---
 
-<div align="center">
+## 👤 Autor
 
-**Hecho con ☕ y Spring Boot**
+**Karuh**
+- GitHub: [@karuh](https://github.com/karuh)
+- Proyecto: Ecommerce Spring Boot 3
+- Año: 2024-2025
 
-⭐ Si te gustó este proyecto, ¡dale una estrella!
+---
 
-</div>
+## 🎓 Contexto Educativo
+
+Este proyecto fue desarrollado como parte de un curso de **Spring Boot** en clase. Implementa conceptos clave como:
+- Arquitectura MVC
+- Persistencia con JPA/Hibernate
+- APIs REST
+- Procesamiento de imágenes
+- Autenticación básica
+- Frontend reactivo con JavaScript
+
+---
+
+## 📞 Soporte
+
+Para reportar bugs o solicitar features, abre un issue en el repositorio.
+
+```
+¡Gracias por usar Onsen Coffee! ☕✨
+```
+
+---
+
+**Última actualización**: 31 de Octubre de 2024
 

@@ -1,11 +1,30 @@
 const comprarCafe = (nombreCafe, idCafe) => {
     if (LOGGED_USER !== "") {
-        $.post("api/cart/add", { coffeeId: idCafe, userMail: LOGGED_USER })
-            .done(function(data) {
-                alert(`¡${nombreCafe} añadido al carrito!\n\nGracias por elegir Onsen Coffee.`);
+        // Usar Fetch API en lugar de jQuery
+        fetch("api/cart/add?productId=" + idCafe + "&quantity=1", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.text())
+            .then(data => {
+                const firstSpace = data.indexOf(" ");
+                const status = data.substring(0, firstSpace);
+                const message = data.substring(firstSpace + 1);
+
+                if (status === "ok") {
+                    alert(`¡${nombreCafe} añadido al carrito!\n\nGracias por elegir Onsen Coffee.`)
+                } else {
+                    alert('Error: ' + message)
+                }
+            })
+            .catch(error => {
+                console.error('Error al agregar al carrito:', error)
+                alert('Error al agregar al carrito: ' + error.message)
             })
     } else {
-        alert('Debes iniciar sesión para comprar');
+        alert('Debes iniciar sesión para comprar')
     }
 };
 
@@ -84,71 +103,69 @@ const mostrarLogin = () => {
         formData.append('password', document.getElementById('password').value);
 
         fetch("api/users/login", {
-            method: 'POST',
-            headers: {
+            method: 'POST', headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: formData
+            }, body: formData
         })
-        .then(response => response.text())
-        .then(res => {
-            const firstSpace = res.indexOf(" ");
-            const status = res.substring(0, firstSpace);
-            const message = res.substring(firstSpace + 1);
+            .then(response => response.text())
+            .then(res => {
+                const firstSpace = res.indexOf(" ");
+                const status = res.substring(0, firstSpace);
+                const message = res.substring(firstSpace + 1);
 
-            if (status === "ok") {
-                LOGGED_USER = message;
+                if (status === "ok") {
+                    LOGGED_USER = message;
 
-                // Actualizar UI para mostrar que el usuario está logueado
-                const userInfo = document.getElementById("user-info");
-                if (userInfo) {
-                    userInfo.textContent = message;
-                    userInfo.classList.remove("hidden");
-                }
+                    // Actualizar UI para mostrar que el usuario está logueado
+                    const userInfo = document.getElementById("user-info");
+                    if (userInfo) {
+                        userInfo.textContent = message;
+                        userInfo.classList.remove("hidden");
+                    }
 
-                // Ocultar login y registro
-                const btnLoginNav = document.getElementById('btn-login');
-                const btnRegistroNav = document.getElementById('btn-registro');
-                if (btnLoginNav) btnLoginNav.classList.add('hidden');
-                if (btnRegistroNav) btnRegistroNav.classList.add('hidden');
+                    // Ocultar login y registro
+                    const btnLoginNav = document.getElementById('btn-login');
+                    const btnRegistroNav = document.getElementById('btn-registro');
+                    if (btnLoginNav) btnLoginNav.classList.add('hidden');
+                    if (btnRegistroNav) btnRegistroNav.classList.add('hidden');
 
-                // Crear botón de logout
-                const logoutBtn = document.createElement('a');
-                logoutBtn.href = '#';
-                logoutBtn.id = 'btn-logout';
-                logoutBtn.className = 'inline-flex items-center text-gray-600 hover:text-red-600 pb-1 transition-colors';
-                logoutBtn.innerHTML = `
+                    // Crear botón de logout
+                    const logoutBtn = document.createElement('a');
+                    logoutBtn.href = '#';
+                    logoutBtn.id = 'btn-logout';
+                    logoutBtn.className = 'inline-flex items-center text-gray-600 hover:text-red-600 pb-1 transition-colors';
+                    logoutBtn.innerHTML = `
                     <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                     </svg>
                     Salir
                 `;
-                logoutBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    cerrarSesion();
-                });
+                    logoutBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        cerrarSesion();
+                    });
 
-                if (userInfo && userInfo.parentNode) {
-                    userInfo.parentNode.insertBefore(logoutBtn, userInfo.nextSibling);
+                    if (userInfo && userInfo.parentNode) {
+                        userInfo.parentNode.insertBefore(logoutBtn, userInfo.nextSibling);
+                    }
+
+                    alert('¡Bienvenido ' + message + '!');
+                    loginForm.reset();
+
+                    // Volver a productos
+                    contenedor.classList.add("grid", "grid-cols-1", "md:grid-cols-2", "lg:grid-cols-3", "gap-8");
+                    obtenerCafes();
+                    document.getElementById('btn-productos')?.classList.add("text-onsen-600", "font-medium", "border-b-2", "border-onsen-600");
+                    document.getElementById('btn-productos')?.classList.remove("text-gray-600");
+                } else {
+                    alert(message);
+                    LOGGED_USER = "";
                 }
-
-                alert('¡Bienvenido ' + message + '!');
-                loginForm.reset();
-
-                // Volver a productos
-                contenedor.classList.add("grid", "grid-cols-1", "md:grid-cols-2", "lg:grid-cols-3", "gap-8");
-                obtenerCafes();
-                document.getElementById('btn-productos')?.classList.add("text-onsen-600", "font-medium", "border-b-2", "border-onsen-600");
-                document.getElementById('btn-productos')?.classList.remove("text-gray-600");
-            } else {
-                alert(message);
-                LOGGED_USER = "";
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error al iniciar sesión: ' + error);
-        });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al iniciar sesión: ' + error);
+            });
     });
 
     document.getElementById('btn-registro')?.addEventListener('click', (e) => {
@@ -225,24 +242,22 @@ const mostrarRegistro = () => {
         formData.append('password', password);
 
         fetch("api/users/register", {
-            method: 'POST',
-            headers: {
+            method: 'POST', headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: formData
+            }, body: formData
         })
-        .then(response => response.text())
-        .then(res => {
-            alert(res);
-            if (res.includes('éxito') || res.includes('exitoso') || res.includes('correctamente')) {
-                registerForm.reset();
-                mostrarLogin();
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error al registrar usuario: ' + error);
-        });
+            .then(response => response.text())
+            .then(res => {
+                alert(res);
+                if (res.includes('éxito') || res.includes('exitoso') || res.includes('correctamente')) {
+                    registerForm.reset();
+                    mostrarLogin();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al registrar usuario: ' + error);
+            });
     });
 
     document.getElementById('btn-login')?.addEventListener('click', (e) => {

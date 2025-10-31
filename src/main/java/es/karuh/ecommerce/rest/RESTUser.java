@@ -2,6 +2,7 @@ package es.karuh.ecommerce.rest;
 
 import es.karuh.ecommerce.model.User;
 import es.karuh.ecommerce.service.UserSerivce;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,14 +27,16 @@ public class RESTUser {
 			return "error El correo ya está registrado";
 		}
         System.out.println("Registering user: " + username + ", " + mail + ", " + nombre + ", " + direccion);
-        us.registerUser(new User(username,mail, password));
+        us.registerUser(new User(username, mail, password));
         return "OK User registered successfully";
     }
 
     @RequestMapping("login")
-    public String loginUser(String mail, String password) {
-        User user = us.getUserByMailPassword(mail, password);
+    public String loginUser(String mail, String password, HttpServletRequest request) {
+        var user = us.getUserByMailPassword(mail, password);
         if (user != null) {
+            // Guardar userId en sesión
+            request.getSession().setAttribute("userId", user.getId());
             return "ok " + user.getNombre();
         } else {
             return "error Usuario o contraseña incorrectos";

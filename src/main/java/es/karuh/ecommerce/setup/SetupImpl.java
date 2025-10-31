@@ -41,7 +41,7 @@ public class SetupImpl implements Setup {
 		);
 
 		var listUsers = List.of(
-				new User("Enner Valencia", "ennerPass123", "enner.valencia@example.com"),
+				new User("Enner Valencia", "Nelson2000", "a@example.com"),
 				new User("María López", "mariaSecure1", "maria.lopez@example.com"),
 				new User("William Pacho", "williamPass456", "william.pacho@example.com"),
 				new User("Ana Torres", "anaPass789", "ana.torres@example.com"),
