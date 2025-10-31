@@ -13,6 +13,8 @@ public class User {
 	private String pass;
 	@Column(unique = true)
 	private String email;
+	private String domicilio;
+	private String telefono;
 
 	@OneToMany
 	private List<Cart> carts = new ArrayList<>();
@@ -71,4 +73,19 @@ public class User {
 		this.id = id;
 	}
 
+	public String getDomicilio() {
+		return domicilio;
+	}
+
+	public void setDomicilio(String domicilio) {
+		this.domicilio = domicilio;
+	}
+
+	public String getTelefono() {
+		return telefono;
+	}
+
+	public void setTelefono(String telefono) {
+		this.telefono = telefono;
+	}
 }
