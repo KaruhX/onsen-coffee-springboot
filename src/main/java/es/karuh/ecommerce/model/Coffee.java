@@ -44,6 +44,7 @@ public class Coffee {
 	@Column(name = "thumbnail", columnDefinition = "LONGBLOB")
 	private byte[] thumbnail;
 
+
 	public Coffee() {
 	}
 
@@ -206,6 +207,7 @@ public class Coffee {
 	public void setThumbnail(byte[] thumbnail) {
 		this.thumbnail = thumbnail;
 	}
+
 
 	@Override
 	public String toString() {

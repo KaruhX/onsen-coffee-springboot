@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Café - Onsen Coffee</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/mustache@4.2.0/mustache.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'onsen': {
+                            50: '#f7fdf7',
+                            100: '#e8f5e8',
+                            200: '#d3ead3',
+                            300: '#afd6af',
+                            400: '#7fb87f',
+                            500: '#5a9b5a',
+                            600: '#4a7c4a',
+                            700: '#3d623d',
+                            800: '#345034',
+                            900: '#2d422d'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 via-gray-100 to-onsen-50 min-h-screen">
+
+    <!-- Header con navegación -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50 border-b-2 border-onsen-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a href="/" class="flex items-center space-x-3 group">
+                    <svg class="w-10 h-10 text-onsen-600 group-hover:text-onsen-700 transition-colors" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
+                    </svg>
+                    <span class="text-3xl font-bold text-gray-900 group-hover:text-onsen-600 transition-colors">Onsen Coffee</span>
+                </a>
+                <a href="/" class="inline-flex items-center px-6 py-3 text-base font-semibold text-white bg-onsen-600 hover:bg-onsen-700 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Volver a la tienda
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenedor principal -->
+    <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <div id="coffee-detail-container">
+            <!-- Loading -->
+            <div class="flex items-center justify-center py-32">
+                <div class="text-center">
+                    <div class="animate-spin rounded-full h-20 w-20 border-b-4 border-onsen-600 mx-auto"></div>
+                    <p class="mt-4 text-gray-600 font-medium">Cargando café...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notificaciones -->
+    <div id="notification-container" class="fixed top-24 right-4 z-50 space-y-2"></div>
+
+    <script th:inline="javascript">
+        const COFFEE_ID = /*[[${coffeeId}]]*/ 0;
+        let COFFEE_DETAIL_TEMPLATE = "";
+
+        // Cargar template Mustache
+        fetch("mustache-templates/coffee-detail.html")
+            .then(response => response.text())
+            .then(template => {
+                COFFEE_DETAIL_TEMPLATE = template;
+                loadCoffeeDetail();
+            })
+            .catch(error => console.error('Error cargando template:', error));
+
+        // Función para cambiar imagen
+        function changeImage(coffeeId, imageNumber) {
+            const mainImage = document.getElementById(`main-image-${coffeeId}`);
+            if (!mainImage) return;
+
+            const imageUrls = [
+                `show-image?id=${coffeeId}`,
+                `show-image-2?id=${coffeeId}`,
+                `show-image-3?id=${coffeeId}`
+            ];
+
+            mainImage.src = imageUrls[imageNumber - 1];
+
+            // Actualizar bordes de thumbnails
+            for (let i = 1; i <= 3; i++) {
+                const thumb = document.getElementById(`thumb-${i}-${coffeeId}`);
+                if (thumb) {
+                    if (i === imageNumber) {
+                        thumb.classList.remove('border-gray-300');
+                        thumb.classList.add('border-onsen-600');
+                    } else {
+                        thumb.classList.remove('border-onsen-600');
+                        thumb.classList.add('border-gray-300');
+                    }
+                }
+            }
+        }
+
+        // Función para agregar al carrito
+        function addToCartDetail(coffeeId, coffeeName) {
+            fetch(`api/cart/add?productId=${coffeeId}&quantity=1`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.text())
+            .then(data => {
+                const parts = data.split(" ", 2);
+                const status = parts[0];
+                const message = parts.slice(1).join(" ");
+
+                if (status === "ok") {
+                    showNotification(`✓ ${coffeeName} añadido al carrito`, 'success');
+                } else {
+                    showNotification(message || 'Error al agregar', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error de conexión', 'error');
+            });
+        }
+
+        // Función para mostrar notificaciones
+        function showNotification(message, type = 'success') {
+            const container = document.getElementById('notification-container');
+            const notification = document.createElement('div');
+            notification.className = `px-6 py-4 rounded-xl shadow-2xl transform transition-all duration-300 ${
+                type === 'success'
+                    ? 'bg-green-500 text-white'
+                    : 'bg-red-500 text-white'
+            }`;
+            notification.style.opacity = '0';
+            notification.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        ${type === 'success'
+                            ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>'
+                            : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>'
+                        }
+                    </svg>
+                    <span class="font-semibold">${message}</span>
+                </div>
+            `;
+
+            container.appendChild(notification);
+
+            setTimeout(() => notification.style.opacity = '1', 10);
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Cargar detalle del café
+        function loadCoffeeDetail() {
+            fetch("api/coffee/obtain")
+                .then(response => response.json())
+                .then(cafes => {
+                    const cafe = cafes.find(c => c.id === COFFEE_ID);
+
+                    if (!cafe) {
+                        document.getElementById('coffee-detail-container').innerHTML = `
+                            <div class="text-center py-20">
+                                <svg class="w-24 h-24 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <h2 class="text-3xl font-bold text-gray-900 mb-4">Café no encontrado</h2>
+                                <p class="text-gray-600 mb-6">Lo sentimos, este producto no está disponible</p>
+                                <a href="/" class="inline-flex items-center px-6 py-3 bg-onsen-600 text-white font-semibold rounded-xl hover:bg-onsen-700 transition-colors">
+                                    Volver a la tienda
+                                </a>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    // Preparar datos
+                    const stars = [];
+                    for (let j = 1; j <= 5; j++) {
+                        stars.push({
+                            class: j <= cafe.bitterness_level ? 'bg-onsen-500' : 'bg-gray-300'
+                        });
+                    }
+
+                    const cafeData = {
+                        id: cafe.id,
+                        coffee_type: cafe.coffee_type,
+                        price: cafe.price,
+                        origin: cafe.origin,
+                        altitude: cafe.altitude,
+                        description: cafe.description,
+                        stock: cafe.stock,
+                        bitterness_level: cafe.bitterness_level,
+                        highStock: cafe.stock > 10,
+                        lowStock: cafe.stock > 0 && cafe.stock <= 10,
+                        outOfStock: cafe.stock <= 0,
+                        stars: stars
+                    };
+
+                    // Renderizar con Mustache
+                    const rendered = Mustache.render(COFFEE_DETAIL_TEMPLATE, cafeData);
+                    document.getElementById('coffee-detail-container').innerHTML = rendered;
+
+                    // Actualizar título de la página
+                    document.title = `${cafe.coffee_type} - Onsen Coffee`;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('coffee-detail-container').innerHTML = `
+                        <div class="text-center py-20">
+                            <svg class="w-24 h-24 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <h2 class="text-3xl font-bold text-red-600 mb-4">Error al cargar el producto</h2>
+                            <p class="text-gray-600 mb-6">No pudimos conectar con el servidor</p>
+                            <a href="/" class="inline-flex items-center px-6 py-3 bg-onsen-600 text-white font-semibold rounded-xl hover:bg-onsen-700 transition-colors">
+                                Volver a la tienda
+                            </a>
+                        </div>
+                    `;
+                });
+        }
+    </script>
+</body>
+</html>
+

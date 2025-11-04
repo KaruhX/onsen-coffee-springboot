@@ -51,11 +51,10 @@ public class CoffeeServiceImpl implements CoffeeService {
 			ImageIO.write(originalImage, "webp", outputStream1);
 			coffee.setImageData(outputStream1.toByteArray());
 
-			// Generar miniatura 80x80 en formato original
+			// Generar miniatura 80x80 en formato JPEG
 			BufferedImage thumbnail = resizeImage(originalImage, 80, 80);
 			ByteArrayOutputStream thumbnailStream = new ByteArrayOutputStream();
-			String format = getImageFormat(coffee.getImage().getOriginalFilename());
-			ImageIO.write(thumbnail, format, thumbnailStream);
+			ImageIO.write(thumbnail, "jpg", thumbnailStream);
 			coffee.setThumbnail(thumbnailStream.toByteArray());
 		}
 
@@ -93,11 +92,10 @@ public class CoffeeServiceImpl implements CoffeeService {
 			ImageIO.write(originalImage, "webp", outputStream1);
 			coffee.setImageData(outputStream1.toByteArray());
 
-			// Actualizar miniatura 80x80 en formato original
+			// Actualizar miniatura 80x80 en formato JPEG
 			BufferedImage thumbnail = resizeImage(originalImage, 80, 80);
 			ByteArrayOutputStream thumbnailStream = new ByteArrayOutputStream();
-			String format = getImageFormat(coffee.getImage().getOriginalFilename());
-			ImageIO.write(thumbnail, format, thumbnailStream);
+			ImageIO.write(thumbnail, "jpg", thumbnailStream);
 			coffee.setThumbnail(thumbnailStream.toByteArray());
 		}
 
