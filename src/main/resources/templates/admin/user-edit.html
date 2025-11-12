@@ -3,37 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <title>Editar Usuario - Onsen Coffee</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'onsen': {
-                            50: '#f7fdf7',
-                            100: '#e8f5e8',
-                            200: '#d3ead3',
-                            300: '#afd6af',
-                            400: '#7fb87f',
-                            500: '#5a9b5a',
-                            600: '#4a7c4a',
-                            700: '#3d623d',
-                            800: '#345034',
-                            900: '#2d422d'
+                        primary: {
+                            50: '#f6faf7',
+                            100: '#e8f3eb',
+                            200: '#d1e7d7',
+                            300: '#a8d3b5',
+                            400: '#76b88c',
+                            500: '#4d9a6a',
+                            600: '#3a7d54',
+                            700: '#2f6445',
+                            800: '#275038',
+                            900: '#21422f',
                         }
+                    },
+                    fontFamily: {
+                        sans: ['Rubik', 'system-ui', 'sans-serif'],
+                        heading: ['Poppins', 'system-ui', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
+    <style>
+        body { font-family: 'Rubik', sans-serif; }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Poppins', sans-serif; }
+    </style>
 </head>
 <body class="bg-gray-50">
-<div th:insert="fragments/general.html :: menu"></div>
+<div th:replace="fragments/admin-header.html :: header"></div>
 
 <div class="max-w-4xl mx-auto px-4 py-8">
     <div class="mb-8">
         <div class="flex items-center text-sm text-gray-600 mb-4">
-            <a th:href="@{/admin/userAdminList}" class="hover:text-onsen-600 transition-colors">Usuarios</a>
+            <a th:href="@{/admin/userAdminList}" class="hover:text-primary-600 transition-colors">Usuarios</a>
             <svg class="w-4 h-4 mx-2" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
             </svg>

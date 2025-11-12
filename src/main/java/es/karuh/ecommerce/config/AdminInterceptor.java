@@ -13,22 +13,18 @@ public class AdminInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         HttpSession session = request.getSession(false);
 
-        // Verificar si la ruta requiere autenticación de admin
         String requestURI = request.getRequestURI();
 
-        // Permitir acceso a la página de login de admin
-        if (requestURI.contains("/admin/login")) {
+        if (requestURI.contains("/loginAdmin") || requestURI.contains("/comprobarPassAdmin")) {
             return true;
         }
 
-        // Verificar si el usuario está autenticado como admin
         if (session != null && session.getAttribute("adminLoggedIn") != null &&
             (Boolean) session.getAttribute("adminLoggedIn")) {
             return true;
         }
 
-        // Redirigir al login de admin si no está autenticado
-        response.sendRedirect(request.getContextPath() + "/admin/login");
+        response.sendRedirect(request.getContextPath() + "/loginAdmin");
         return false;
     }
 }

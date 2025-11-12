@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class StartController {
+
 	private final Setup setup;
 	public StartController(Setup setup) {
 		this.setup = setup;
@@ -17,12 +18,32 @@ public class StartController {
 	@RequestMapping()
     public String start() {
 		setup.runSetup();
-        return "products";
+        return "index";
     }
+
+	@GetMapping("/products")
+	public String products() {
+		return "products";
+	}
 
 	@GetMapping("/coffee-detail")
 	public String coffeeDetail(@RequestParam("id") Integer id, Model model) {
 		model.addAttribute("coffeeId", id);
 		return "coffee-detail";
+	}
+
+	@GetMapping("/checkout")
+	public String checkout() {
+		return "order-checkout";
+	}
+
+	@GetMapping("/orders")
+	public String orders() {
+		return "order-history";
+	}
+
+	@GetMapping("/test-images")
+	public String testImages() {
+		return "test-images";
 	}
 }

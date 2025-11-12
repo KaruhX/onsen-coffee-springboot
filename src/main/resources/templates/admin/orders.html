@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Pedidos - Onsen Coffee Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f6faf7',
+                            100: '#e8f3eb',
+                            200: '#d1e7d7',
+                            300: '#a8d3b5',
+                            400: '#76b88c',
+                            500: '#4d9a6a',
+                            600: '#3a7d54',
+                            700: '#2f6445',
+                            800: '#275038',
+                            900: '#21422f',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Rubik', 'system-ui', 'sans-serif'],
+                        heading: ['Poppins', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Rubik', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+<!-- Navbar Admin -->
+<div th:replace="fragments/admin-header.html :: header"></div>
+
+<!-- Main Content -->
+<div class="max-w-7xl mx-auto px-4 py-8">
+    <!-- Filtros y búsqueda -->
+    <form method="get" th:action="@{/admin/orders/obtainOrders}" class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+            <label class="block text-sm text-gray-600 mb-1">Estado</label>
+            <select name="status" class="w-full border border-gray-300 rounded-md px-3 py-2" th:value="${selectedStatus}">
+                <option value="ALL">Todos</option>
+                <option value="PENDING" th:selected="${selectedStatus == 'PENDING'}">Pendiente</option>
+                <option value="PAYMENT" th:selected="${selectedStatus == 'PAYMENT'}">Pago Confirmado</option>
+                <option value="CONFIRMED" th:selected="${selectedStatus == 'CONFIRMED'}">Confirmado</option>
+                <option value="PROCESSING" th:selected="${selectedStatus == 'PROCESSING'}">En Proceso</option>
+                <option value="SHIPPED" th:selected="${selectedStatus == 'SHIPPED'}">Enviado</option>
+                <option value="DELIVERED" th:selected="${selectedStatus == 'DELIVERED'}">Entregado</option>
+                <option value="CANCELED" th:selected="${selectedStatus == 'CANCELED'}">Cancelado</option>
+            </select>
+        </div>
+        <div>
+            <label class="block text-sm text-gray-600 mb-1">Buscar</label>
+            <input type="text" name="q" th:value="${q}" placeholder="Nombre, email, dirección, provincia" class="w-full border border-gray-300 rounded-md px-3 py-2"/>
+        </div>
+        <div>
+            <label class="block text-sm text-gray-600 mb-1">Orden</label>
+            <select name="sort" class="w-full border border-gray-300 rounded-md px-3 py-2" th:value="${sort}">
+                <option value="desc">Más recientes primero</option>
+                <option value="asc">Más antiguos primero</option>
+            </select>
+        </div>
+        <div class="md:col-span-3 flex gap-3">
+            <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-md">Aplicar</button>
+            <a th:href="@{/admin/orders/obtainOrders}" class="px-4 py-2 border border-gray-300 rounded-md">Limpiar</a>
+        </div>
+    </form>
+
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-heading font-bold text-gray-900 mb-2">Gestión de Pedidos</h1>
+        <p class="text-gray-600">Administra todos los pedidos de la tienda</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-lg border border-gray-200 p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Total Pedidos</p>
+                    <p class="text-2xl font-heading font-bold text-gray-900 mt-1" th:text="${totalCount}">0</p>
+                </div>
+                <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
+                    <span class="text-primary-600 text-xl font-bold">📦</span>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg border border-gray-200 p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Pendientes</p>
+                    <p class="text-2xl font-heading font-bold text-amber-600 mt-1" th:text="${pendingCount}">0</p>
+                </div>
+                <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
+                    <span class="text-amber-600 text-xl font-bold">⏳</span>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg border border-gray-200 p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">En Proceso</p>
+                    <p class="text-2xl font-heading font-bold text-blue-600 mt-1" th:text="${processingCount}">0</p>
+                </div>
+                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                    <span class="text-blue-600 text-xl font-bold">⚙️</span>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg border border-gray-200 p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Completados</p>
+                    <p class="text-2xl font-heading font-bold text-green-600 mt-1" th:text="${deliveredCount}">0</p>
+                </div>
+                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                    <span class="text-green-600 text-xl font-bold">✓</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-heading font-semibold text-gray-900">Lista de Pedidos</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-heading font-semibold text-gray-700 uppercase tracking-wider">
+                            Nº Pedido
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-heading font-semibold text-gray-700 uppercase tracking-wider">
+                            Cliente
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-heading font-semibold text-gray-700 uppercase tracking-wider">
+                            Dirección
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-heading font-semibold text-gray-700 uppercase tracking-wider">
+                            Fecha
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-heading font-semibold text-gray-700 uppercase tracking-wider">
+                            Total
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-heading font-semibold text-gray-700 uppercase tracking-wider">
+                            Estado
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-heading font-semibold text-gray-700 uppercase tracking-wider">
+                            Acciones
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    <tr th:if="${#lists.isEmpty(orders)}">
+                        <td colspan="7" class="px-6 py-12 text-center">
+                            <div class="flex flex-col items-center justify-center">
+                                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                                    <span class="text-4xl text-gray-400">📦</span>
+                                </div>
+                                <p class="text-gray-500 text-sm">No hay pedidos registrados</p>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:each="order : ${orders}" class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="text-sm font-heading font-semibold text-gray-900" th:text="'#' + ${order.id}">1</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex flex-col">
+                                <span class="text-sm font-medium text-gray-900" th:text="${order.fullName}">Juan Pérez</span>
+                                <span class="text-xs text-gray-500" th:text="${order.user?.email}">email@example.com</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex flex-col max-w-xs">
+                                <span class="text-sm text-gray-900 truncate" th:text="${order.address}">Calle Principal 123</span>
+                                <span class="text-xs text-gray-500" th:text="${order.province}">Madrid</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="text-sm text-gray-900" th:text="${#dates.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">01/06/2024</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="text-sm font-heading font-semibold text-gray-900" th:text="${#numbers.formatDecimal(order.total, 1, 2)} + '€'">100.00€</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span th:if="${order.status.name() == 'PENDING'}"
+                                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                                Pendiente
+                            </span>
+                            <span th:if="${order.status.name() == 'PAYMENT'}"
+                                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                Pago Confirmado
+                            </span>
+                            <span th:if="${order.status.name() == 'CONFIRMED'}"
+                                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                                Confirmado
+                            </span>
+                            <span th:if="${order.status.name() == 'PROCESSING'}"
+                                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                En Proceso
+                            </span>
+                            <span th:if="${order.status.name() == 'SHIPPED'}"
+                                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-cyan-100 text-cyan-800">
+                                Enviado
+                            </span>
+                            <span th:if="${order.status.name() == 'DELIVERED'}"
+                                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                Entregado
+                            </span>
+                            <span th:if="${order.status.name() == 'CANCELED'}"
+                                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                Cancelado
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center space-x-2">
+                                <button onclick="viewOrderDetails(this)"
+                                        th:data-order-id="${order.id}"
+                                        th:data-order-full-name="${order.fullName}"
+                                        th:data-order-email="${order.user?.email}"
+                                        th:data-order-address="${order.address}"
+                                        th:data-order-province="${order.province}"
+                                        th:data-order-subtotal="${#numbers.formatDecimal(order.subtotal, 1, 2)}"
+                                        th:data-order-iva="${#numbers.formatDecimal(order.iva, 1, 2)}"
+                                        th:data-order-total="${#numbers.formatDecimal(order.total, 1, 2)}"
+                                        th:data-order-created="${#dates.format(order.createdAt, 'dd/MM/yyyy HH:mm')}"
+                                        th:data-order-status="${order.status.name()}"
+                                        th:data-order-items="${#lists.size(order.items)}"
+                                        class="px-3 py-1.5 text-xs font-medium text-primary-700 bg-primary-50 hover:bg-primary-100 rounded-md transition-colors">
+                                    Ver Detalles
+                                </button>
+                                <form th:action="@{/admin/orders/updateStatus}" method="post" class="inline">
+                                    <input type="hidden" name="orderId" th:value="${order.id}">
+                                    <select name="status"
+                                            onchange="this.form.submit()"
+                                            class="px-2 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                                        <option value="PENDING" th:selected="${order.status.name() == 'PENDING'}">Pendiente</option>
+                                        <option value="PAYMENT" th:selected="${order.status.name() == 'PAYMENT'}">Pago Confirmado</option>
+                                        <option value="CONFIRMED" th:selected="${order.status.name() == 'CONFIRMED'}">Confirmado</option>
+                                        <option value="PROCESSING" th:selected="${order.status.name() == 'PROCESSING'}">En Proceso</option>
+                                        <option value="SHIPPED" th:selected="${order.status.name() == 'SHIPPED'}">Enviado</option>
+                                        <option value="DELIVERED" th:selected="${order.status.name() == 'DELIVERED'}">Entregado</option>
+                                        <option value="CANCELED" th:selected="${order.status.name() == 'CANCELED'}">Cancelado</option>
+                                    </select>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Detalles del Pedido -->
+<div id="orderModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+            <h3 class="text-xl font-heading font-bold text-gray-900">Detalles del Pedido <span id="modalOrderId"></span></h3>
+            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">×</button>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <h4 class="text-sm font-heading font-semibold text-gray-700 mb-3">Información del Cliente</h4>
+                    <div class="space-y-2">
+                        <div>
+                            <span class="text-xs text-gray-500">Nombre Completo</span>
+                            <p class="text-sm font-medium text-gray-900" id="modalFullName"></p>
+                        </div>
+                        <div>
+                            <span class="text-xs text-gray-500">Email</span>
+                            <p class="text-sm font-medium text-gray-900" id="modalEmail"></p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-sm font-heading font-semibold text-gray-700 mb-3">Dirección de Envío</h4>
+                    <div class="space-y-2">
+                        <div>
+                            <span class="text-xs text-gray-500">Dirección</span>
+                            <p class="text-sm font-medium text-gray-900" id="modalAddress"></p>
+                        </div>
+                        <div>
+                            <span class="text-xs text-gray-500">Provincia</span>
+                            <p class="text-sm font-medium text-gray-900" id="modalProvince"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-200 pt-6 mb-6">
+                <h4 class="text-sm font-heading font-semibold text-gray-700 mb-3">Información del Pedido</h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                        <span class="text-xs text-gray-500">Fecha</span>
+                        <p class="text-sm font-medium text-gray-900" id="modalCreated"></p>
+                    </div>
+                    <div>
+                        <span class="text-xs text-gray-500">Estado</span>
+                        <p class="text-sm font-medium text-gray-900" id="modalStatus"></p>
+                    </div>
+                    <div>
+                        <span class="text-xs text-gray-500">Productos</span>
+                        <p class="text-sm font-medium text-gray-900" id="modalItems"></p>
+                    </div>
+                    <div>
+                        <span class="text-xs text-gray-500">Total</span>
+                        <p class="text-sm font-heading font-semibold text-primary-600" id="modalTotal"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-200 pt-6">
+                <h4 class="text-sm font-heading font-semibold text-gray-700 mb-3">Resumen de Pago</h4>
+                <div class="space-y-2 bg-gray-50 rounded-lg p-4">
+                    <div class="flex justify-between">
+                        <span class="text-sm text-gray-600">Subtotal</span>
+                        <span class="text-sm font-medium text-gray-900" id="modalSubtotal"></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-sm text-gray-600">IVA (21%)</span>
+                        <span class="text-sm font-medium text-gray-900" id="modalIva"></span>
+                    </div>
+                    <div class="flex justify-between pt-2 border-t border-gray-200">
+                        <span class="text-base font-heading font-semibold text-gray-900">Total</span>
+                        <span class="text-base font-heading font-bold text-primary-600" id="modalTotalFinal"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function viewOrderDetails(button) {
+    const orderId = button.getAttribute('data-order-id');
+    const fullName = button.getAttribute('data-order-full-name');
+    const email = button.getAttribute('data-order-email');
+    const address = button.getAttribute('data-order-address');
+    const province = button.getAttribute('data-order-province');
+    const subtotal = button.getAttribute('data-order-subtotal');
+    const iva = button.getAttribute('data-order-iva');
+    const total = button.getAttribute('data-order-total');
+    const created = button.getAttribute('data-order-created');
+    const status = button.getAttribute('data-order-status');
+    const items = button.getAttribute('data-order-items');
+
+    document.getElementById('modalOrderId').textContent = '#' + orderId;
+    document.getElementById('modalFullName').textContent = fullName;
+    document.getElementById('modalEmail').textContent = email;
+    document.getElementById('modalAddress').textContent = address;
+    document.getElementById('modalProvince').textContent = province;
+    document.getElementById('modalSubtotal').textContent = subtotal + '€';
+    document.getElementById('modalIva').textContent = iva + '€';
+    document.getElementById('modalTotal').textContent = total + '€';
+    document.getElementById('modalTotalFinal').textContent = total + '€';
+    document.getElementById('modalCreated').textContent = created;
+    document.getElementById('modalItems').textContent = items;
+
+    // Status translation
+    const statusMap = {
+        'PENDING': 'Pendiente',
+        'PAYMENT': 'Pago Confirmado',
+        'CONFIRMED': 'Confirmado',
+        'PROCESSING': 'En Proceso',
+        'SHIPPED': 'Enviado',
+        'DELIVERED': 'Entregado',
+        'CANCELED': 'Cancelado'
+    };
+    document.getElementById('modalStatus').textContent = statusMap[status] || status;
+
+    document.getElementById('orderModal').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('orderModal').classList.add('hidden');
+}
+
+// Close modal on click outside
+document.getElementById('orderModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+
+// Close modal on ESC key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+});
+</script>
+
+</body>
+</html>

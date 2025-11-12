@@ -1,64 +1,10 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalle del Café - Onsen Coffee</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/mustache@4.2.0/mustache.min.js"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'onsen': {
-                            50: '#f7fdf7',
-                            100: '#e8f5e8',
-                            200: '#d3ead3',
-                            300: '#afd6af',
-                            400: '#7fb87f',
-                            500: '#5a9b5a',
-                            600: '#4a7c4a',
-                            700: '#3d623d',
-                            800: '#345034',
-                            900: '#2d422d'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-            animation: fadeIn 0.8s ease-out forwards;
-        }
-    </style>
-</head>
-<body class="bg-gradient-to-br from-gray-50 via-gray-100 to-onsen-50 min-h-screen">
+<head th:replace="~{fragments/head :: head('Detalle del Café | Onsen Coffee')}"></head>
+<body class="bg-gray-50 min-h-screen">
 
-    <!-- Header con navegación -->
-    <nav class="bg-white shadow-lg sticky top-0 z-50 border-b-2 border-onsen-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <a href="/" class="flex items-center space-x-3 group">
-                    <svg class="w-10 h-10 text-onsen-600 group-hover:text-onsen-700 transition-colors" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
-                    </svg>
-                    <span class="text-3xl font-bold text-gray-900 group-hover:text-onsen-600 transition-colors">Onsen Coffee</span>
-                </a>
-                <a href="/" class="inline-flex items-center px-6 py-3 text-base font-semibold text-white bg-onsen-600 hover:bg-onsen-700 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                    </svg>
-                    Volver a la tienda
-                </a>
-            </div>
-        </div>
-    </nav>
+<!-- Header con navegación -->
+<nav th:replace="~{fragments/header :: header}"></nav>
 
     <!-- Contenedor principal -->
     <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">

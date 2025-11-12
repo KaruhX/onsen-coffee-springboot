@@ -1,17 +1,127 @@
-<div class="max-w-5xl mx-auto px-4 py-8">
-    <!-- Encabezado del Carrito -->
-    <div class="mb-8 text-center">
-        <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-onsen-500 to-onsen-700 rounded-full mb-4 shadow-lg">
-            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
-            </svg>
+{{#notLoggedIn}}
+<div class="max-w-2xl mx-auto px-4 py-12">
+    <div class="bg-white border border-gray-200 rounded-lg p-12 text-center shadow-sm">
+        <h3 class="text-2xl font-bold text-gray-900 mb-3">Inicia sesión para ver tu carrito</h3>
+        <p class="text-gray-600 mb-8">Una vez que inicies sesión, verás los productos que has añadido.</p>
+        <div class="flex gap-4 justify-center">
+            <button onclick="mostrarLogin()" class="bg-primary-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-primary-700 transition-colors">
+                Iniciar Sesión
+            </button>
+            <button onclick="mostrarRegistro()" class="bg-white text-gray-900 border border-gray-300 px-6 py-2.5 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                Registrarse
+            </button>
         </div>
-        <h1 class="text-4xl font-bold text-gray-800 mb-2">Tu Carrito Onsen</h1>
-        <p class="text-gray-600">Revisa tus productos seleccionados</p>
-    </div>
-
-    <!-- Contenedor del Carrito -->
-    <div id="cart-container">
-        <!-- El contenido se cargará dinámicamente aquí -->
     </div>
 </div>
+{{/notLoggedIn}}
+
+{{#emptyCart}}
+<div class="max-w-2xl mx-auto px-4 py-12">
+    <div class="bg-white border border-gray-200 rounded-lg p-12 text-center shadow-sm">
+        <h3 class="text-2xl font-bold text-gray-900 mb-3">Tu carrito está vacío</h3>
+        <p class="text-gray-600 mb-8">Parece que aún no has añadido ningún café. ¡Explora nuestra selección!</p>
+        <button onclick="obtenerCafes();" class="bg-primary-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-primary-700 transition-colors">
+            Ver Productos
+        </button>
+    </div>
+</div>
+{{/emptyCart}}
+
+{{#hasItems}}
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Tu Carrito</h1>
+        <p class="text-gray-600">Revisa y finaliza tu pedido.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 space-y-4">
+            {{#items}}
+            <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
+                <div class="flex gap-4">
+                    <div class="flex-shrink-0">
+                        <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg overflow-hidden flex items-center justify-center relative">
+                            <img src="/show-thumbnail?id={{coffeeId}}"
+                                 alt="{{coffeeName}}"
+                                 class="w-full h-full object-cover cart-product-image"
+                                 loading="lazy"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                            <div class="absolute inset-0 hidden items-center justify-center bg-gray-100">
+                                <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-grow flex flex-col">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <h3 class="text-base font-semibold text-gray-900">{{coffeeName}}</h3>
+                                <p class="text-sm text-gray-500">{{origin}}</p>
+                            </div>
+                            <p class="text-base font-semibold text-gray-900">€{{itemTotalFormatted}}</p>
+                        </div>
+
+                        <div class="flex-grow"></div>
+
+                        <div class="flex items-center justify-between mt-2">
+                            <p class="text-sm text-gray-600">
+                                €{{price}} × {{quantity}} = €{{itemTotalFormatted}}
+                            </p>
+                            <button onclick="deliminarDelCarrito('{{coffeeId}}')" class="text-sm font-medium text-red-600 hover:text-red-700 transition-colors">
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{/items}}
+        </div>
+
+        <div class="lg:col-span-1">
+            <div class="bg-white border border-gray-200 rounded-lg p-6 sticky top-24 shadow-sm">
+                <h3 class="text-lg font-semibold text-gray-900 mb-6 pb-4 border-b border-gray-200">Resumen del Pedido</h3>
+
+                <div class="space-y-3 mb-6">
+                    <div class="flex justify-between text-sm text-gray-600">
+                        <span>Subtotal</span>
+                        <span class="font-medium text-gray-900">€{{subtotalFormatted}}</span>
+                    </div>
+                    <div class="flex justify-between text-sm text-gray-600">
+                        <span>IVA (21%)</span>
+                        <span class="font-medium text-gray-900">€{{ivaFormatted}}</span>
+                    </div>
+                    <div class="flex justify-between text-sm text-primary-600">
+                        <span>Envío</span>
+                        <span class="font-semibold">GRATIS</span>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-200 pt-4 mb-6">
+                    <div class="flex justify-between items-center">
+                        <span class="text-base font-semibold text-gray-900">Total</span>
+                        <span class="text-xl font-bold text-gray-900">€{{totalFormatted}}</span>
+                    </div>
+                </div>
+
+                <button onclick="window.location.href='/checkout'" class="w-full bg-primary-600 text-white font-semibold py-2.5 px-4 rounded-lg hover:bg-primary-700 transition-colors mb-3">
+                    Finalizar Compra
+                </button>
+
+                <button onclick="window.location.href='/orders'" class="w-full bg-white border border-gray-300 text-gray-700 font-semibold py-2.5 px-4 rounded-lg hover:bg-gray-50 transition-colors">
+                    Ver Mis Pedidos
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{{/hasItems}}
+
+{{#loading}}
+<div class="flex items-center justify-center py-20">
+    <div class="text-center">
+        <div class="animate-spin rounded-full h-8 w-8 border-2 border-primary-200 border-t-primary-600 mx-auto"></div>
+    </div>
+</div>
+{{/loading}}

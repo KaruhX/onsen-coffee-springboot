@@ -3,72 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <title>Gestión de Cafés - Onsen Coffee Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'onsen': {
-                            50: '#f7fdf7',
-                            100: '#e8f5e8',
-                            200: '#d3ead3',
-                            300: '#afd6af',
-                            400: '#7fb87f',
-                            500: '#5a9b5a',
-                            600: '#4a7c4a',
-                            700: '#3d623d',
-                            800: '#345034',
-                            900: '#2d422d'
+                        primary: {
+                            50: '#f6faf7',
+                            100: '#e8f3eb',
+                            200: '#d1e7d7',
+                            300: '#a8d3b5',
+                            400: '#76b88c',
+                            500: '#4d9a6a',
+                            600: '#3a7d54',
+                            700: '#2f6445',
+                            800: '#275038',
+                            900: '#21422f',
                         }
+                    },
+                    fontFamily: {
+                        sans: ['Rubik', 'system-ui', 'sans-serif'],
+                        heading: ['Poppins', 'system-ui', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
+    <style>
+        body {
+            font-family: 'Rubik', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
 </head>
 <body class="bg-gray-50">
-<div th:insert="fragments/general.html :: menu"></div>
+
+<!-- Navbar Admin -->
+<div th:replace="fragments/admin-header.html :: header"></div>
 
 <div class="max-w-7xl mx-auto px-4 py-8">
+    <!-- Header -->
     <div class="mb-8">
-        <div class="flex items-center justify-between space-x-4">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900">Gestión de Cafés</h1>
-                <p class="text-gray-600 mt-2">Administra el catálogo de productos</p>
+                <h1 class="text-3xl font-bold text-gray-900 mb-1">Gestión de Cafés</h1>
+                <p class="text-gray-600">Administra el catálogo de productos</p>
             </div>
-            <div>
-                <a th:href="@{/admin/userAdminList}"
-                   class="inline-flex items-center px-6 py-3 bg-onsen-600 hover:bg-onsen-700 text-white font-semibold rounded-lg shadow-md transition-all duration-200 transform hover:-translate-y-0.5">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    Administrar Usuarios
-                </a>
-                <a th:href="@{/admin/registerCoffee}"
-                   class="inline-flex items-center px-6 py-3 bg-onsen-600 hover:bg-onsen-700 text-white font-semibold rounded-lg shadow-md transition-all duration-200 transform hover:-translate-y-0.5">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    Registrar Nuevo Café
-                </a>
-            </div>
+            <a th:href="@{/admin/registerCoffee}"
+               class="inline-flex items-center justify-center px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-lg shadow-sm hover:shadow-md transition-all">
+                Agregar Nuevo Café
+            </a>
         </div>
     </div>
 
-    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+    <!-- Tabla -->
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Imagen</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">ID</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Tipo</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Origen</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Precio</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Stock</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Descripción</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Acciones</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Imagen</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Producto</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Origen</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Precio</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Stock</th>
+                        <th class="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -77,48 +82,60 @@
                             <img th:src="@{/show-thumbnail(id=${coffees.id})}"
                                  onerror="this.src='https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=80&h=80&fit=crop&q=80'"
                                  alt="Miniatura del café"
-                                 class="w-16 h-16 rounded-lg object-cover shadow-sm"/>
+                                 class="w-16 h-16 rounded-lg object-cover border border-gray-200"/>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" th:text="${coffees.id}">1</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="text-sm font-medium text-gray-900" th:text="${coffees.coffee_type}">Espresso</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600" th:text="${coffees.origin}">Colombia</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="text-sm font-semibold text-onsen-600" th:text="${coffees.price + ' €'}">3.00 €</span>
+                        <td class="px-6 py-4">
+                            <div class="flex flex-col">
+                                <span class="text-sm font-semibold text-gray-900" th:text="${coffees.coffee_type}"></span>
+                                <span class="text-xs text-gray-500" th:text="'ID: ' + ${coffees.id}"></span>
+                            </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                                  th:classappend="${coffees.stock > 10} ? 'bg-green-100 text-green-800' : (${coffees.stock > 0} ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800')"
-                                  th:text="${coffees.stock}">50</span>
+                            <span class="text-sm text-gray-700" th:text="${coffees.origin}"></span>
                         </td>
-                        <td class="px-6 py-4 text-sm text-gray-600 max-w-xs truncate" th:text="${coffees.description}">Strong and bold</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
-                            <form th:action="@{/admin/editCoffee}" method="get" style="display:inline;">
-                                <input type="hidden" name="id" th:value="${coffees.id}"/>
-                                <button type="submit" class="inline-flex items-center text-onsen-600 hover:text-onsen-700 transition-colors">
-                                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                    </svg>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="text-sm font-semibold text-gray-900" th:text="'€' + ${coffees.price}"></span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span th:if="${coffees.stock > 10}" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800" th:text="${coffees.stock}"></span>
+                            <span th:if="${coffees.stock > 0 and coffees.stock <= 10}" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800" th:text="${coffees.stock}"></span>
+                            <span th:if="${coffees.stock == 0}" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Agotado</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end space-x-2">
+                                <a th:href="@{/admin/editCoffee(id=${coffees.id})}"
+                                   class="px-3 py-1.5 text-sm font-medium text-primary-700 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors">
                                     Editar
-                                </button>
-                            </form>
-                            <form th:action="@{/admin/deleteCoffee}" method="post" style="display:inline;"
-                                  onsubmit="return confirm('¿Estás seguro de que deseas eliminar este café?');">
-                                <input type="hidden" name="id" th:value="${coffees.id}"/>
-                                <button type="submit" class="inline-flex items-center text-red-600 hover:text-red-700 transition-colors">
-                                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                    </svg>
-                                    Eliminar
-                                </button>
-                            </form>
+                                </a>
+                                <form th:action="@{/admin/deleteCoffee}" method="post" class="inline-block"
+                                      onsubmit="return confirm('¿Estás seguro de que deseas eliminar este café?');">
+                                    <input type="hidden" name="id" th:value="${coffees.id}"/>
+                                    <button type="submit"
+                                            class="px-3 py-1.5 text-sm font-medium text-red-700 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
+                                        Eliminar
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
+
+    <div th:if="${#lists.isEmpty(coffees)}" class="text-center py-12">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-xl mb-4">
+            <div class="w-8 h-8 bg-gray-300 rounded"></div>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">No hay cafés registrados</h3>
+        <p class="text-gray-600 mb-4">Comienza agregando tu primer café al catálogo.</p>
+        <a th:href="@{/admin/registerCoffee}"
+           class="inline-flex items-center px-6 py-2.5 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors">
+            Agregar Café
+        </a>
+    </div>
 </div>
+
 </body>
 </html>
+

@@ -7,6 +7,7 @@ public class Cart {
 
 	private int quantity;
 
+	private boolean removed = false; // Para soft delete
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
@@ -26,6 +27,14 @@ public class Cart {
 
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
+	}
+
+	public boolean isRemoved() {
+		return removed;
+	}
+
+	public void setRemoved(boolean removed) {
+		this.removed = removed;
 	}
 
 	public User getUser() {

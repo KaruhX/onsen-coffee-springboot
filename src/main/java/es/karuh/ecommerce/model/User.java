@@ -16,7 +16,7 @@ public class User {
 	private String domicilio;
 	private String telefono;
 
-	@OneToMany
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Cart> carts = new ArrayList<>();
 	
 	@Id

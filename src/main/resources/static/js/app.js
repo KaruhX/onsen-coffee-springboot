@@ -1,0 +1,547 @@
+const AppState = {
+    loggedUser: "",
+    templates: {
+        coffeeCard: "",
+        coffeeDetail: "",
+        register: "",
+        login: "",
+        cart: ""
+    },
+    isUserLoggedIn() {
+        return this.loggedUser !== "";
+    },
+    setUser(username) {
+        this.loggedUser = username;
+    },
+    clearUser() {
+        this.loggedUser = "";
+    },
+    getUser() {
+        return this.loggedUser;
+    }
+}
+const Utils = {
+    showNotification(message, type = 'success') {
+        const colors = {
+            success: {
+                bg: 'bg-primary-600',
+                icon: '✓',
+                iconBg: 'bg-white/20'
+            },
+            error: {
+                bg: 'bg-red-600',
+                icon: '✕',
+                iconBg: 'bg-white/20'
+            },
+            warning: {
+                bg: 'bg-amber-600',
+                icon: '⚠',
+                iconBg: 'bg-white/20'
+            },
+            info: {
+                bg: 'bg-blue-600',
+                icon: 'ℹ',
+                iconBg: 'bg-white/20'
+            }
+        }
+        const config = colors[type] || colors.success
+        const notificationId = `notification-${Date.now()}`
+        const $notification = $(`
+            <div id="${notificationId}" class="transform translate-y-2 opacity-0 transition-all duration-300 mb-3">
+                <div class="${config.bg} text-white rounded-lg shadow-2xl overflow-hidden">
+                    <div class="flex items-center px-4 py-3 space-x-3">
+                        <div class="${config.iconBg} rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0">
+                            <span class="text-white text-lg font-bold">${config.icon}</span>
+                        </div>
+                        <div class="flex-1 font-medium text-sm">
+                            ${message}
+                        </div>
+                        <button onclick="Utils.closeNotification('${notificationId}')" 
+                                class="text-white hover:bg-white/20 rounded p-1 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `)
+        let $container = $('#notification-container')
+        if (testcontainer.length) {
+            $container = $('<div id="notification-container" class="fixed bottom-6 right-6 z-[9999] flex flex-col items-end max-w-md"></div>')
+            $('body').append($container)
+        }
+        $container.append($notification)
+        requestAnimationFrame(() => {
+            $notification.removeClass('translate-y-2 opacity-0')
+        })
+        setTimeout(() => {
+            this.closeNotification(notificationId)
+        }, 4000)
+    },
+    closeNotification(notificationId) {
+        const $notification = $(`#${notificationId}`)
+        if ($notification.length) {
+            $notification.addClass('translate-y-2 opacity-0')
+            setTimeout(() => {
+                $notification.remove()
+            }, 300)
+        }
+    },
+    showLoader($container) {
+        $container.html(`
+            <div class="flex items-center justify-center py-20">
+                <div class="text-center">
+                    <div class="animate-spin rounded-full h-8 w-8 border-2 border-primary-200 border-t-primary-600 mx-auto"></div>
+                </div>
+            </div>
+        `)
+    },
+    showError($container, message) {
+        $container.html(`
+            <div class="col-span-full text-center py-16">
+                <h3 class="text-xl font-medium text-red-600 mb-2">Error</h3>
+                <p class="text-gray-600">${message}</p>
+            </div>
+        `)
+    },
+    updateNavigation(activeBtn) {
+        const buttons = ['btn-login', 'btn-registro']
+        buttons.forEach(btn => {
+            const $btn = $(`#${btn}`)
+            if ($btn.length) {
+                if (btn === activeBtn) {
+                    $btn.addClass("text-gray-900 font-semibold border-b-2 border-gray-900")
+                    $btn.removeClass("text-gray-600")
+                } else {
+                    $btn.removeClass("text-gray-900 font-semibold border-b-2 border-gray-900")
+                    $btn.addClass("text-gray-600")
+                }
+            }
+        })
+    }
+}
+const ProductsModule = {
+    loadProducts() {
+        const $contenedor = $("#contenedor")
+        $contenedor.addClass("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8")
+        Utils.showLoader($contenedor)
+        $.getJSON("api/coffee/obtain")
+            .done((cafes) => {
+                if (!cafes || cafes.length === 0) {
+                    $contenedor.html(`
+                        <div class="col-span-full text-center py-16">
+                            <div class="text-6xl text-gray-300 mb-6">☕</div>
+                            <h3 class="text-xl font-medium text-gray-600 mb-2">No hay cafés disponibles</h3>
+                            <p class="text-gray-500">Pronto tendremos nuevos cafés para ti</p>
+                        </div>
+                    `)
+                    return
+                }
+                const cafesConVista = cafes.map(cafe => ({
+                    id: cafe.id,
+                    coffee_type: cafe.coffee_type,
+                    price: cafe.price,
+                    origin: cafe.origin,
+                    altitude: cafe.altitude,
+                    description: cafe.description,
+                    stock: cafe.stock,
+                    bitterness: cafe.bitterness_level,
+                    bitterness_percentage: (cafe.bitterness_level / 5) * 100,
+                    highStock: cafe.stock > 10,
+                    lowStock: cafe.stock > 0 && cafe.stock <= 10,
+                    outOfStock: cafe.stock <= 0,
+                    buttonClass: cafe.stock > 0 ? 'bg-primary-600 hover:bg-primary-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed',
+                    buttonText: cafe.stock > 0 ? 'Añadir al Carrito' : 'Sin Stock'
+                }))
+                const html = cafesConVista.map(cafe =>
+                    Mustache.render(AppState.templates.coffeeCard, cafe)
+                ).join('')
+                $contenedor.html(html)
+            })
+            .fail((error) => {
+                console.error('Error:', error)
+                Utils.showError($contenedor, 'No se pudo conectar con el servidor')
+            })
+    },
+    addToCart(nombreCafe, idCafe) {
+        if (!AppState.isUserLoggedIn()) {
+            Utils.showNotification('Debes iniciar sesión para comprar', 'error')
+            return
+        }
+        $.ajax({
+            url: `api/cart/add?productId=${idCafe}&quantity=1`,
+            method: 'POST',
+            contentType: 'application/json',
+            success: (data) => {
+                const [status, ...messageParts] = data.split(" ")
+                const message = messageParts.join(" ")
+                if (status === "ok") {
+                    Utils.showNotification(`¡${nombreCafe} añadido al carrito!`, 'success')
+                } else {
+                    Utils.showNotification(`Error: ${message}`, 'error')
+                }
+            },
+            error: (error) => {
+                console.error('Error al agregar al carrito:', error)
+                Utils.showNotification('Error al agregar al carrito', 'error')
+            }
+        })
+    }
+}
+const AuthModule = {
+    showLogin() {
+        const $contenedor = $("#contenedor")
+        $contenedor.removeClass("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8")
+        $contenedor.html(AppState.templates.login)
+        Utils.updateNavigation('btn-login')
+        $("#login-form").on('submit', (e) => {
+            e.preventDefault()
+            this.handleLogin()
+        })
+        $("#btn-registro-link").on('click', (e) => {
+            e.preventDefault()
+            this.showRegister()
+        })
+    },
+    handleLogin() {
+        const email = $("#email").val();
+        const password = $("#password").val();
+        if (!email || !password) {
+            Utils.showNotification('Por favor completa todos los campos', 'error');
+            return;
+        }
+        // Simular login sin persistencia (acepta cualquier combinación para demo)
+        AppState.setUser(email.split('@')[0] || 'Usuario');
+        this.updateUIAfterLogin(AppState.getUser());
+        Utils.showNotification(`¡Bienvenido ${AppState.getUser()}!`, 'success');
+        $("#login-form")[0].reset();
+        const $contenedor = $("#contenedor");
+        $contenedor.addClass("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8");
+        ProductsModule.loadProducts();
+        Utils.updateNavigation(null);
+    },
+    showRegister() {
+        const $contenedor = $("#contenedor")
+        $contenedor.removeClass("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8")
+        $contenedor.html(AppState.templates.register)
+        Utils.updateNavigation('btn-registro')
+        $("#register-form").on('submit', (e) => {
+            e.preventDefault()
+            this.handleRegister()
+        })
+        $("#btn-login-link").on('click', (e) => {
+            e.preventDefault()
+            this.showLogin()
+        })
+    },
+    handleRegister() {
+        const nombre = $('input[name="nombre"]').val()
+        const email = $('input[name="mail"]').val()
+        const password = $('input[name="password"]').val()
+        const confirmPassword = $('input[name="confirmPassword"]').val()
+        if (!nombre || !email || !password || !confirmPassword) {
+            Utils.showNotification('Por favor completa todos los campos', 'error')
+            return
+        }
+        if (password !== confirmPassword) {
+            Utils.showNotification('Las contraseñas no coinciden', 'error')
+            return
+        }
+        if (password.length < 6) {
+            Utils.showNotification('La contraseña debe tener al menos 6 caracteres', 'error')
+            return
+        }
+        $.ajax({
+            url: "api/users/register",
+            method: 'POST',
+            contentType: 'application/x-www-form-urlencoded',
+            data: { nombre, mail: email, password },
+            success: (res) => {
+                Utils.showNotification(res, 'success')
+                if (res.toLowerCase().includes('éxito') ||
+                    res.toLowerCase().includes('exitoso') ||
+                    res.toLowerCase().includes('correctamente')) {
+                    $("#register-form")[0].reset()
+                    setTimeout(() => this.showLogin(), 1500)
+                }
+            },
+            error: (error) => {
+                console.error('Error:', error)
+                Utils.showNotification('Error al registrar usuario', 'error')
+            }
+        })
+    },
+    logout() {
+        AppState.clearUser();
+        $("#user-info").addClass("hidden").text("");
+        $("#btn-logout").remove();
+        $("#btn-login, #btn-registro").removeClass('hidden');
+        $("#btn-orders").addClass('hidden');
+        Utils.showNotification('Sesión cerrada (se perderá al recargar)', 'info');
+        const $contenedor = $("#contenedor");
+        $contenedor.addClass("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8");
+        ProductsModule.loadProducts();
+    },
+    updateUIAfterLogin(userName) {
+        const $userInfo = $("#user-info");
+        $userInfo.removeClass("hidden");
+        $userInfo.find('span').text(userName);
+        if (!$('#btn-logout').length) {
+            $userInfo.append('<button id="btn-logout" class="ml-2 text-sm font-medium text-red-600 hover:text-red-700 transition-colors">Cerrar Sesión</button>');
+            $('#btn-logout').on('click', () => this.logout());
+        }
+        $("#btn-login, #btn-registro").addClass('hidden');
+        $("#btn-orders").removeClass('hidden');
+    }
+}
+const CartModule = {
+    showCart() {
+        const $contenedor = $("#contenedor")
+        $contenedor.removeClass("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8")
+        Utils.updateNavigation(null)
+        if (!AppState.isUserLoggedIn()) {
+            const data = { notLoggedIn: true }
+            $contenedor.html(Mustache.render(AppState.templates.cart, data))
+            return
+        }
+        $contenedor.html(Mustache.render(AppState.templates.cart, { loading: true }))
+        $.getJSON("api/cart/obtain")
+            .done((cartItems) => {
+                if (!cartItems || cartItems.length === 0) {
+                    const data = { emptyCart: true }
+                    $contenedor.html(Mustache.render(AppState.templates.cart, data))
+                    return
+                }
+                const subtotal = cartItems.reduce((sum, item) =>
+                    sum + (item.price * item.quantity), 0
+                )
+                const iva = subtotal * 0.21
+                const total = subtotal + iva
+                const items = cartItems.map(item => ({
+                    coffeeId: item.coffeeId,
+                    coffeeName: item.coffeeName || item.coffeeType,
+                    origin: item.origin,
+                    price: item.price,
+                    quantity: item.quantity,
+                    stock: item.stock,
+                    lowStock: item.stock <= 10,
+                    priceFormatted: item.price.toFixed(2),
+                    itemTotalFormatted: (item.price * item.quantity).toFixed(2)
+                }))
+                const data = {
+                    hasItems: true,
+                    items,
+                    subtotalFormatted: subtotal.toFixed(2),
+                    ivaFormatted: iva.toFixed(2),
+                    totalFormatted: total.toFixed(2)
+                }
+                $contenedor.html(Mustache.render(AppState.templates.cart, data))
+            })
+            .fail((error) => {
+                console.error('Error al cargar el carrito:', error)
+                $contenedor.html(`
+                    <div class="bg-red-50 border-2 border-red-200 rounded-xl p-8 text-center">
+                        <div class="text-6xl mb-4">⚠️</div>
+                        <h3 class="text-xl font-bold text-red-800 mb-2">Error al cargar el carrito</h3>
+                        <p class="text-red-600">${error.message || 'Error desconocido'}</p>
+                        <button onclick="CartModule.showCart()" class="mt-4 bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                            Reintentar
+                        </button>
+                    </div>
+                `)
+            })
+    },
+    removeFromCart(coffeeId) {
+        $.ajax({
+            url: `api/cart/remove?productId=${coffeeId}`,
+            method: 'POST',
+            contentType: 'application/json',
+            success: (data) => {
+                const [status, ...messageParts] = data.split(" ")
+                const message = messageParts.join(" ")
+                if (status === "ok") {
+                    Utils.showNotification('Producto eliminado del carrito', 'success')
+                    this.showCart()
+                } else {
+                    Utils.showNotification(`Error: ${message}`, 'error')
+                }
+            },
+            error: (error) => {
+                console.error('Error al eliminar del carrito:', error)
+                Utils.showNotification('Error al eliminar del carrito', 'error')
+            }
+        })
+    }
+}
+const CoffeeDetailModule = {
+    currentCoffeeData: null,
+    showDetail(coffeeId) {
+        window.location.href = `/coffee-detail?id=${coffeeId}`
+    },
+    closeDetail() {
+        $("#coffee-detail-modal").empty()
+        $("body").css("overflow", "")
+        this.currentCoffeeData = null
+    },
+    changeImage(coffeeId, imageNumber) {
+        const imageUrl = `show-image${imageNumber === 1 ? '' : `-${imageNumber}`}?id=${coffeeId}`
+        $(`#main-detail-image-${coffeeId}`).attr('src', imageUrl)
+        $(`button[onclick*="changeDetailImage(${coffeeId}"]`).each(function(index) {
+            if (index + 1 === imageNumber) {
+                $(this).removeClass('border-gray-300').addClass('border-primary-500')
+            } else {
+                $(this).removeClass('border-primary-500').addClass('border-gray-300')
+            }
+        })
+    },
+    addToCartFromDetail(coffeeId, coffeeName, price) {
+        if (!AppState.isUserLoggedIn()) {
+            Utils.showNotification('Debes iniciar sesión para agregar productos al carrito', 'error')
+            this.closeDetail()
+            AuthModule.showLogin()
+            return
+        }
+        $.ajax({
+            url: `api/cart/add?productId=${coffeeId}&quantity=1`,
+            method: 'POST',
+            contentType: 'application/json',
+            success: (data) => {
+                const [status, ...messageParts] = data.split(" ")
+                const message = messageParts.join(" ")
+                if (status === "ok") {
+                    Utils.showNotification(`¡${coffeeName} añadido al carrito!`, 'success')
+                } else {
+                    Utils.showNotification(`Error: ${message}`, 'error')
+                }
+            },
+            error: (error) => {
+                console.error('Error al agregar al carrito:', error)
+                Utils.showNotification('Error al agregar al carrito', 'error')
+            }
+        })
+    }
+}
+function comprarCafe(nombreCafe, idCafe) {
+    ProductsModule.addToCart(nombreCafe, idCafe)
+}
+function obtenerCafes() {
+    ProductsModule.loadProducts()
+}
+function mostrarLogin() {
+    AuthModule.showLogin()
+}
+function mostrarRegistro() {
+    AuthModule.showRegister()
+}
+function cerrarSesion() {
+    AuthModule.logout()
+}
+function mostrarCarrito() {
+    CartModule.showCart()
+}
+function deliminarDelCarrito(coffeeId) {
+    CartModule.removeFromCart(coffeeId)
+}
+function showCoffeeDetail(coffeeId) {
+    CoffeeDetailModule.showDetail(coffeeId)
+}
+function closeCoffeeDetail() {
+    CoffeeDetailModule.closeDetail()
+}
+function changeDetailImage(coffeeId, imageNumber) {
+    CoffeeDetailModule.changeImage(coffeeId, imageNumber)
+}
+function addToCartFromDetail(coffeeId, coffeeName, price) {
+    CoffeeDetailModule.addToCartFromDetail(coffeeId, coffeeName, price)
+}
+function showNotification(message, type) {
+    Utils.showNotification(message, type)
+}
+function updateNavigation(activeBtn) {
+    Utils.updateNavigation(activeBtn)
+}
+function closeDetailIfOutside(event) {
+    if (event.target === event.currentTarget) {
+        CoffeeDetailModule.closeDetail()
+    }
+}
+let LOGGED_USER = ""
+let currentCoffeeData = null
+Object.defineProperty(window, 'LOGGED_USER', {
+    get: () => AppState.loggedUser,
+    set: (value) => AppState.loggedUser = value
+})
+document.addEventListener('DOMContentLoaded', () => {
+    const templatePromises = [
+        fetch("mustache-templates/coffee-card.html").then(r => r.text()),
+        fetch("mustache-templates/coffee-detail.html").then(r => r.text()),
+        fetch("mustache-templates/register.html").then(r => r.text()),
+        fetch("mustache-templates/login.html").then(r => r.text()),
+        fetch("mustache-templates/cart.html").then(r => r.text())
+    ]
+    Promise.all(templatePromises)
+        .then(([coffeeCard, coffeeDetail, register, login, cart]) => {
+            AppState.templates.coffeeCard = coffeeCard
+            AppState.templates.coffeeDetail = coffeeDetail
+            AppState.templates.register = register
+            AppState.templates.login = login
+            AppState.templates.cart = cart
+            setTimeout(() => {
+                ProductsModule.loadProducts()
+            }, 500)
+        })
+        .catch(error => {
+            console.error('Error cargando templates:', error)
+            Utils.showNotification('Error al cargar la aplicación', 'error')
+        })
+    setupNavigationListeners()
+    if (AppState.isUserLoggedIn()) {
+        const username = AppState.getUser()
+        AuthModule.updateUIAfterLogin(username)
+    }
+})
+function setupNavigationListeners() {
+    const $btnLogin = $('#btn-login')
+    const $btnRegistro = $('#btn-registro')
+    const $btnCarrito = $('#btn-carrito')
+    if ($btnLogin.length) {
+        $btnLogin.on('click', (e) => {
+            e.preventDefault()
+            AuthModule.showLogin()
+        })
+    }
+    if ($btnRegistro.length) {
+        $btnRegistro.on('click', (e) => {
+            e.preventDefault()
+            AuthModule.showRegister()
+        })
+    }
+    if ($btnCarrito.length) {
+        $btnCarrito.on('click', (e) => {
+            e.preventDefault()
+            CartModule.showCart()
+        })
+    }
+    const $btnLoginMobile = $('#btn-login-mobile')
+    const $btnRegistroMobile = $('#btn-registro-mobile')
+    const $btnCarritoMobile = $('#btn-carrito-mobile')
+    if ($btnLoginMobile.length) {
+        $btnLoginMobile.on('click', (e) => {
+            e.preventDefault()
+            AuthModule.showLogin()
+        })
+    }
+    if ($btnRegistroMobile.length) {
+        $btnRegistroMobile.on('click', (e) => {
+            e.preventDefault()
+            AuthModule.showRegister()
+        })
+    }
+    if ($btnCarritoMobile.length) {
+        $btnCarritoMobile.on('click', (e) => {
+            e.preventDefault()
+            CartModule.showCart()
+        })
+    }
+}

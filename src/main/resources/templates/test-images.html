@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Imágenes del Carrito</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .image-container {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-top: 10px;
+        }
+        img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+        }
+        .success { color: green; }
+        .error { color: red; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:hover { background: #0056b3; }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test de Imágenes del Carrito</h1>
+        <button onclick="testCartImages()">Probar Cargar Carrito</button>
+        <button onclick="testAllCoffeeImages()">Probar Todas las Imágenes de Café</button>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        async function testCartImages() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<p>Cargando carrito...</p>';
+
+            try {
+                const response = await fetch('/api/cart/obtain');
+                const cartItems = await response.json();
+
+                console.log('Respuesta del carrito:', cartItems);
+
+                if (!cartItems || cartItems.length === 0) {
+                    resultsDiv.innerHTML = '<p class="error">❌ El carrito está vacío</p>';
+                    return;
+                }
+
+                let html = '<h2>Items en el Carrito:</h2>';
+
+                for (const item of cartItems) {
+                    const imageUrl = `/show-thumbnail?id=${item.coffeeId}`;
+
+                    html += `
+                        <div class="item">
+                            <h3>${item.coffeeName || item.coffeeType}</h3>
+                            <p><strong>Coffee ID:</strong> ${item.coffeeId}</p>
+                            <p><strong>URL de Imagen:</strong> <code>${imageUrl}</code></p>
+                            <p><strong>Precio:</strong> €${item.price}</p>
+                            <p><strong>Cantidad:</strong> ${item.quantity}</p>
+                            <div class="image-container">
+                                <div>
+                                    <p>Imagen del servidor:</p>
+                                    <img src="${imageUrl}"
+                                         onerror="this.style.border='2px solid red'; this.alt='Error al cargar imagen'">
+                                </div>
+                            </div>
+                            <pre>${JSON.stringify(item, null, 2)}</pre>
+                        </div>
+                    `;
+                }
+
+                resultsDiv.innerHTML = html;
+
+            } catch (error) {
+                console.error('Error:', error);
+                resultsDiv.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+            }
+        }
+
+        async function testAllCoffeeImages() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<p>Cargando todos los cafés...</p>';
+
+            try {
+                const response = await fetch('/api/coffee/obtain');
+                const coffees = await response.json();
+
+                console.log('Todos los cafés:', coffees);
+
+                let html = '<h2>Todos los Cafés Disponibles:</h2>';
+
+                for (const coffee of coffees) {
+                    const imageUrl = `/show-thumbnail?id=${coffee.id}`;
+
+                    html += `
+                        <div class="item">
+                            <h3>${coffee.coffee_type}</h3>
+                            <p><strong>ID:</strong> ${coffee.id}</p>
+                            <p><strong>URL:</strong> <code>${imageUrl}</code></p>
+                            <div class="image-container">
+                                <img src="${imageUrl}"
+                                     onerror="this.style.border='2px solid red'; this.alt='❌ Error'">
+                            </div>
+                        </div>
+                    `;
+                }
+
+                resultsDiv.innerHTML = html;
+
+            } catch (error) {
+                console.error('Error:', error);
+                resultsDiv.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+            }
+        }
+
+        // Cargar automáticamente al abrir la página
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('Página de test cargada');
+        });
+    </script>
+</body>
+</html>
+

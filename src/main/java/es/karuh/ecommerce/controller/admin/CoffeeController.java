@@ -2,14 +2,10 @@ package es.karuh.ecommerce.controller.admin;
 
 import es.karuh.ecommerce.model.Coffee;
 import es.karuh.ecommerce.service.CoffeeService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 @Controller
@@ -30,7 +26,7 @@ public class CoffeeController {
 
     @GetMapping("/editCoffee")
     public String editCoffee(@RequestParam("id") Integer id, Model model) {
-        Coffee coffee = coffeeService.getCoffeeById(id);
+        var coffee = coffeeService.getCoffeeById(id);
         model.addAttribute("coffee", coffee);
         return "admin/coffee-edit";
     }
