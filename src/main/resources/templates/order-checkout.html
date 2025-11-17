@@ -50,6 +50,16 @@
                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition">
                 </div>
                 <div>
+                    <label class="block text-sm font-medium text-gray-900 mb-2">Email *</label>
+                    <input type="email" id="email" required placeholder="tu@email.com"
+                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 mb-2">Teléfono *</label>
+                    <input type="tel" id="phone" required placeholder="Ej: 612345678"
+                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition">
+                </div>
+                <div>
                     <label class="block text-sm font-medium text-gray-900 mb-2">Dirección Completa *</label>
                     <input type="text" id="address" required placeholder="Calle, número, piso, puerta"
                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition">
@@ -60,7 +70,7 @@
                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition">
                 </div>
                 <div class="pt-4">
-                    <button id="btn-next-1" class="w-full bg-primary-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-primary-700 transition-all shadow-sm">
+                    <button type="button" id="btn-next-1" class="w-full bg-primary-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-primary-700 transition-all shadow-sm">
                         Continuar al Pago →
                     </button>
                 </div>
@@ -99,10 +109,10 @@
                     </div>
                 </div>
                 <div class="flex gap-3 pt-4">
-                    <button id="btn-back-1" class="flex-1 bg-gray-100 text-gray-700 font-semibold py-3 px-4 rounded-lg hover:bg-gray-200 transition-all">
+                    <button type="button" id="btn-back-1" class="flex-1 bg-gray-100 text-gray-700 font-semibold py-3 px-4 rounded-lg hover:bg-gray-200 transition-all">
                         ← Volver
                     </button>
-                    <button id="btn-next-2" class="flex-1 bg-primary-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-primary-700 transition-all shadow-sm">
+                    <button type="button" id="btn-next-2" class="flex-1 bg-primary-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-primary-700 transition-all shadow-sm">
                         Continuar →
                     </button>
                 </div>
@@ -118,6 +128,8 @@
                     <h3 class="font-semibold text-gray-900 mb-3 text-sm uppercase tracking-wide">Envío</h3>
                     <div class="space-y-2 text-sm">
                         <p><span class="text-gray-600">Nombre:</span> <span id="confirm-name" class="font-medium text-gray-900"></span></p>
+                        <p><span class="text-gray-600">Email:</span> <span id="confirm-email" class="font-medium text-gray-900"></span></p>
+                        <p><span class="text-gray-600">Teléfono:</span> <span id="confirm-phone" class="font-medium text-gray-900"></span></p>
                         <p><span class="text-gray-600">Dirección:</span> <span id="confirm-addr" class="font-medium text-gray-900"></span></p>
                         <p><span class="text-gray-600">Provincia:</span> <span id="confirm-prov" class="font-medium text-gray-900"></span></p>
                     </div>
@@ -153,10 +165,10 @@
                 </div>
 
                 <div class="flex gap-3 pt-4">
-                    <button id="btn-back-2" class="flex-1 bg-gray-100 text-gray-700 font-semibold py-3 px-4 rounded-lg hover:bg-gray-200 transition-all">
+                    <button type="button" id="btn-back-2" class="flex-1 bg-gray-100 text-gray-700 font-semibold py-3 px-4 rounded-lg hover:bg-gray-200 transition-all">
                         ← Volver
                     </button>
-                    <button id="btn-confirm" class="flex-1 bg-primary-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-primary-700 transition-all shadow-sm">
+                    <button type="button" id="btn-confirm" class="flex-1 bg-primary-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-primary-700 transition-all shadow-sm">
                         Confirmar Pedido ✓
                     </button>
                 </div>
@@ -197,7 +209,6 @@
         </div>
     </div>
 
-    <script src="/js/globals.js"></script>
     <script src="/js/checkout.js"></script>
 </body>
 </html>

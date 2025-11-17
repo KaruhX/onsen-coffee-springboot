@@ -1,5 +1,4 @@
 const AppState = {
-    loggedUser: "",
     templates: {
         coffeeCard: "",
         coffeeDetail: "",
@@ -7,17 +6,32 @@ const AppState = {
         login: "",
         cart: ""
     },
+    getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    },
+    setCookie(name, value, days = 7) {
+        const expires = new Date();
+        expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+        document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
+    },
+    deleteCookie(name) {
+        document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
+    },
     isUserLoggedIn() {
-        return this.loggedUser !== "";
+        return this.getCookie('loggedUser') !== null && this.getCookie('loggedUser') !== "";
     },
     setUser(username) {
-        this.loggedUser = username;
+        this.setCookie('loggedUserName', username, 7);
     },
     clearUser() {
-        this.loggedUser = "";
+        this.deleteCookie('loggedUser');
+        this.deleteCookie('loggedUserName');
     },
     getUser() {
-        return this.loggedUser;
+        return this.getCookie('loggedUserName') || "";
     }
 }
 const Utils = {
@@ -67,7 +81,7 @@ const Utils = {
             </div>
         `)
         let $container = $('#notification-container')
-        if (testcontainer.length) {
+        if (!$container.length) {
             $container = $('<div id="notification-container" class="fixed bottom-6 right-6 z-[9999] flex flex-col items-end max-w-md"></div>')
             $('body').append($container)
         }
@@ -87,6 +101,20 @@ const Utils = {
                 $notification.remove()
             }, 300)
         }
+    },
+    updateCartCount() {
+        if (!AppState.isUserLoggedIn()) {
+            $('#cart-count').text('0');
+            return;
+        }
+        $.getJSON("api/cart/obtain")
+            .done((cartItems) => {
+                const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+                $('#cart-count').text(totalItems);
+            })
+            .fail(() => {
+                $('#cart-count').text('0');
+            });
     },
     showLoader($container) {
         $container.html(`
@@ -178,6 +206,7 @@ const ProductsModule = {
                 const message = messageParts.join(" ")
                 if (status === "ok") {
                     Utils.showNotification(`¡${nombreCafe} añadido al carrito!`, 'success')
+                    Utils.updateCartCount()
                 } else {
                     Utils.showNotification(`Error: ${message}`, 'error')
                 }
@@ -189,6 +218,7 @@ const ProductsModule = {
         })
     }
 }
+
 const AuthModule = {
     showLogin() {
         const $contenedor = $("#contenedor")
@@ -211,15 +241,37 @@ const AuthModule = {
             Utils.showNotification('Por favor completa todos los campos', 'error');
             return;
         }
-        // Simular login sin persistencia (acepta cualquier combinación para demo)
-        AppState.setUser(email.split('@')[0] || 'Usuario');
-        this.updateUIAfterLogin(AppState.getUser());
-        Utils.showNotification(`¡Bienvenido ${AppState.getUser()}!`, 'success');
-        $("#login-form")[0].reset();
-        const $contenedor = $("#contenedor");
-        $contenedor.addClass("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8");
-        ProductsModule.loadProducts();
-        Utils.updateNavigation(null);
+
+        $.ajax({
+            url: "api/users/login",
+            method: 'POST',
+            contentType: 'application/x-www-form-urlencoded',
+            dataType: 'text',
+            data: { mail: email, password: password },
+            success: (res) => {
+                console.log('Login response:', res);
+                const [status, ...messageParts] = res.split(" ");
+                const message = messageParts.join(" ");
+
+                if (status === "ok") {
+                    AppState.setUser(message);
+                    this.updateUIAfterLogin(message);
+                    Utils.showNotification(`¡Bienvenido ${message}!`, 'success');
+                    $("#login-form")[0].reset();
+                    const $contenedor = $("#contenedor");
+                    $contenedor.addClass("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8");
+                    ProductsModule.loadProducts();
+                    Utils.updateNavigation(null);
+                } else {
+
+                    Utils.showNotification(message || 'Usuario o contraseña incorrectos', 'error');
+                }
+            },
+            error: (error) => {
+                console.error('Error en el login:', error);
+                Utils.showNotification('Error al iniciar sesión', 'error');
+            }
+        });
     },
     showRegister() {
         const $contenedor = $("#contenedor")
@@ -256,14 +308,19 @@ const AuthModule = {
             url: "api/users/register",
             method: 'POST',
             contentType: 'application/x-www-form-urlencoded',
-            data: { nombre, mail: email, password },
+            dataType: 'text',
+            data: { username: nombre, mail: email, password: password },
             success: (res) => {
-                Utils.showNotification(res, 'success')
-                if (res.toLowerCase().includes('éxito') ||
-                    res.toLowerCase().includes('exitoso') ||
-                    res.toLowerCase().includes('correctamente')) {
+                console.log('Register response:', res);
+                const [status, ...messageParts] = res.split(" ");
+                const message = messageParts.join(" ");
+
+                if (status === "OK") {
+                    Utils.showNotification('Usuario registrado exitosamente', 'success')
                     $("#register-form")[0].reset()
                     setTimeout(() => this.showLogin(), 1500)
+                } else {
+                    Utils.showNotification(message || 'Error al registrar usuario', 'error')
                 }
             },
             error: (error) => {
@@ -274,27 +331,32 @@ const AuthModule = {
     },
     logout() {
         AppState.clearUser();
-        $("#user-info").addClass("hidden").text("");
-        $("#btn-logout").remove();
+        $("#user-info").addClass("hidden");
+        $("#user-name").text("");
         $("#btn-login, #btn-registro").removeClass('hidden');
+        $("#btn-login-mobile, #btn-registro-mobile").removeClass('hidden');
         $("#btn-orders").addClass('hidden');
-        Utils.showNotification('Sesión cerrada (se perderá al recargar)', 'info');
+        $("#btn-orders-mobile").addClass('hidden');
+        Utils.showNotification('Sesión cerrada correctamente', 'info');
         const $contenedor = $("#contenedor");
         $contenedor.addClass("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8");
         ProductsModule.loadProducts();
     },
     updateUIAfterLogin(userName) {
-        const $userInfo = $("#user-info");
-        $userInfo.removeClass("hidden");
-        $userInfo.find('span').text(userName);
-        if (!$('#btn-logout').length) {
-            $userInfo.append('<button id="btn-logout" class="ml-2 text-sm font-medium text-red-600 hover:text-red-700 transition-colors">Cerrar Sesión</button>');
-            $('#btn-logout').on('click', () => this.logout());
-        }
+        $("#user-name").text(userName);
+        $("#user-info").removeClass("hidden");
         $("#btn-login, #btn-registro").addClass('hidden');
+        $("#btn-login-mobile, #btn-registro-mobile").addClass('hidden');
         $("#btn-orders").removeClass('hidden');
+        $("#btn-orders-mobile").removeClass('hidden');
+        Utils.updateCartCount();
+        const $logoutBtn = $('#btn-logout');
+        if ($logoutBtn.length) {
+            $logoutBtn.off('click').on('click', () => this.logout());
+        }
     }
 }
+
 const CartModule = {
     showCart() {
         const $contenedor = $("#contenedor")
@@ -362,6 +424,7 @@ const CartModule = {
                 const message = messageParts.join(" ")
                 if (status === "ok") {
                     Utils.showNotification('Producto eliminado del carrito', 'success')
+                    Utils.updateCartCount()
                     this.showCart()
                 } else {
                     Utils.showNotification(`Error: ${message}`, 'error')
@@ -374,6 +437,7 @@ const CartModule = {
         })
     }
 }
+
 const CoffeeDetailModule = {
     currentCoffeeData: null,
     showDetail(coffeeId) {
@@ -411,6 +475,7 @@ const CoffeeDetailModule = {
                 const message = messageParts.join(" ")
                 if (status === "ok") {
                     Utils.showNotification(`¡${coffeeName} añadido al carrito!`, 'success')
+                    Utils.updateCartCount()
                 } else {
                     Utils.showNotification(`Error: ${message}`, 'error')
                 }
@@ -422,6 +487,7 @@ const CoffeeDetailModule = {
         })
     }
 }
+
 function comprarCafe(nombreCafe, idCafe) {
     ProductsModule.addToCart(nombreCafe, idCafe)
 }
@@ -468,10 +534,18 @@ function closeDetailIfOutside(event) {
 }
 let LOGGED_USER = ""
 let currentCoffeeData = null
+
 Object.defineProperty(window, 'LOGGED_USER', {
-    get: () => AppState.loggedUser,
-    set: (value) => AppState.loggedUser = value
+    get: () => AppState.getCookie('loggedUser') || "",
+    set: (value) => {
+        if (value) {
+            AppState.setCookie('loggedUser', value, 7)
+        } else {
+            AppState.deleteCookie('loggedUser')
+        }
+    }
 })
+
 document.addEventListener('DOMContentLoaded', () => {
     const templatePromises = [
         fetch("mustache-templates/coffee-card.html").then(r => r.text()),
@@ -496,11 +570,13 @@ document.addEventListener('DOMContentLoaded', () => {
             Utils.showNotification('Error al cargar la aplicación', 'error')
         })
     setupNavigationListeners()
+
     if (AppState.isUserLoggedIn()) {
         const username = AppState.getUser()
         AuthModule.updateUIAfterLogin(username)
     }
 })
+
 function setupNavigationListeners() {
     const $btnLogin = $('#btn-login')
     const $btnRegistro = $('#btn-registro')

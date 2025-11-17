@@ -22,12 +22,12 @@ public class CartServiceImpl implements CartService {
 
 	@Override
 	public void addProduct(int userId, int productId, int quantity) {
-		User user = em.find(User.class, userId);
+		var user = em.find(User.class, userId);
 		if (user == null) {
 			throw new RuntimeException("Usuario no encontrado");
 		}
 
-		Coffee coffee = em.find(Coffee.class, productId);
+		var coffee = em.find(Coffee.class, productId);
 		if (coffee == null) {
 			throw new RuntimeException("Producto no encontrado");
 		}
@@ -36,7 +36,6 @@ public class CartServiceImpl implements CartService {
 			throw new RuntimeException("Stock insuficiente");
 		}
 
-		// Buscar si ya existe en el carrito (incluso si está marcado como removed)
 		List<Cart> existingCarts = em.createQuery(
 			"SELECT c FROM Cart c WHERE c.user.id = :userId AND c.coffee.id = :coffeeId", Cart.class)
 			.setParameter("userId", userId)
@@ -44,14 +43,13 @@ public class CartServiceImpl implements CartService {
 			.getResultList();
 
 		if (!existingCarts.isEmpty()) {
-			Cart existingCart = existingCarts.get(0);
+			var existingCart = existingCarts.get(0);
 
-			// Si estaba removido, restaurarlo
 			if (existingCart.isRemoved()) {
 				existingCart.setRemoved(false);
 				existingCart.setQuantity(quantity);
 			} else {
-				// Si no estaba removido, incrementar cantidad
+
 				int newQuantity = existingCart.getQuantity() + quantity;
 
 				if (coffee.getStock() < newQuantity) {
@@ -62,8 +60,8 @@ public class CartServiceImpl implements CartService {
 
 			em.merge(existingCart);
 		} else {
-			// Crear nuevo cart
-			Cart newCart = new Cart();
+
+			var newCart = new Cart();
 			newCart.setUser(user);
 			newCart.setCoffee(coffee);
 			newCart.setQuantity(quantity);
@@ -87,8 +85,7 @@ public class CartServiceImpl implements CartService {
 
 		return results.stream().map(row -> {
 			Map<String, Object> map = new java.util.HashMap<>();
-			
-			// Convertir explícitamente coffeeId a String para Mustache
+
 			Object coffeeIdObj = row[2];
 			String coffeeIdStr = coffeeIdObj != null ? coffeeIdObj.toString() : "0";
 			
@@ -110,7 +107,7 @@ public class CartServiceImpl implements CartService {
 
 	@Override
 	public void removeProduct(int userId, int productId) {
-		// Marcar como removido en lugar de eliminar (soft delete)
+
 		int updated = em.createQuery(
 			"UPDATE Cart c SET c.removed = true WHERE c.user.id = :userId AND c.coffee.id = :coffeeId")
 			.setParameter("userId", userId)

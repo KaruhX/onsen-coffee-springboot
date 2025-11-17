@@ -47,132 +47,53 @@
 <!-- Navbar Admin -->
 <div th:replace="fragments/admin-header.html :: header"></div>
 
-<!-- Main Content -->
 <div class="max-w-7xl mx-auto px-4 py-8">
-    <!-- Filtros y búsqueda -->
-    <form method="get" th:action="@{/admin/orders/obtainOrders}" class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-            <label class="block text-sm text-gray-600 mb-1">Estado</label>
-            <select name="status" class="w-full border border-gray-300 rounded-md px-3 py-2" th:value="${selectedStatus}">
-                <option value="ALL">Todos</option>
-                <option value="PENDING" th:selected="${selectedStatus == 'PENDING'}">Pendiente</option>
-                <option value="PAYMENT" th:selected="${selectedStatus == 'PAYMENT'}">Pago Confirmado</option>
-                <option value="CONFIRMED" th:selected="${selectedStatus == 'CONFIRMED'}">Confirmado</option>
-                <option value="PROCESSING" th:selected="${selectedStatus == 'PROCESSING'}">En Proceso</option>
-                <option value="SHIPPED" th:selected="${selectedStatus == 'SHIPPED'}">Enviado</option>
-                <option value="DELIVERED" th:selected="${selectedStatus == 'DELIVERED'}">Entregado</option>
-                <option value="CANCELED" th:selected="${selectedStatus == 'CANCELED'}">Cancelado</option>
-            </select>
-        </div>
-        <div>
-            <label class="block text-sm text-gray-600 mb-1">Buscar</label>
-            <input type="text" name="q" th:value="${q}" placeholder="Nombre, email, dirección, provincia" class="w-full border border-gray-300 rounded-md px-3 py-2"/>
-        </div>
-        <div>
-            <label class="block text-sm text-gray-600 mb-1">Orden</label>
-            <select name="sort" class="w-full border border-gray-300 rounded-md px-3 py-2" th:value="${sort}">
-                <option value="desc">Más recientes primero</option>
-                <option value="asc">Más antiguos primero</option>
-            </select>
-        </div>
-        <div class="md:col-span-3 flex gap-3">
-            <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-md">Aplicar</button>
-            <a th:href="@{/admin/orders/obtainOrders}" class="px-4 py-2 border border-gray-300 rounded-md">Limpiar</a>
-        </div>
-    </form>
-
     <!-- Header -->
     <div class="mb-8">
-        <h1 class="text-3xl font-heading font-bold text-gray-900 mb-2">Gestión de Pedidos</h1>
-        <p class="text-gray-600">Administra todos los pedidos de la tienda</p>
-    </div>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-1">Gestión de Pedidos</h1>
+                <p class="text-gray-600">Administra todos los pedidos de la tienda</p>
+            </div>
+        </div>
 
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white rounded-lg border border-gray-200 p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-gray-600">Total Pedidos</p>
-                    <p class="text-2xl font-heading font-bold text-gray-900 mt-1" th:text="${totalCount}">0</p>
-                </div>
-                <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
-                    <span class="text-primary-600 text-xl font-bold">📦</span>
-                </div>
-            </div>
+        <!-- Mensajes de éxito/error -->
+        <div th:if="${param.success}" class="mt-4 bg-primary-50 border border-primary-200 text-primary-800 px-4 py-3 rounded-lg flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+            <span th:text="${param.success}">Operación exitosa</span>
         </div>
-        <div class="bg-white rounded-lg border border-gray-200 p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-gray-600">Pendientes</p>
-                    <p class="text-2xl font-heading font-bold text-amber-600 mt-1" th:text="${pendingCount}">0</p>
-                </div>
-                <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
-                    <span class="text-amber-600 text-xl font-bold">⏳</span>
-                </div>
-            </div>
-        </div>
-        <div class="bg-white rounded-lg border border-gray-200 p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-gray-600">En Proceso</p>
-                    <p class="text-2xl font-heading font-bold text-blue-600 mt-1" th:text="${processingCount}">0</p>
-                </div>
-                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                    <span class="text-blue-600 text-xl font-bold">⚙️</span>
-                </div>
-            </div>
-        </div>
-        <div class="bg-white rounded-lg border border-gray-200 p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-gray-600">Completados</p>
-                    <p class="text-2xl font-heading font-bold text-green-600 mt-1" th:text="${deliveredCount}">0</p>
-                </div>
-                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                    <span class="text-green-600 text-xl font-bold">✓</span>
-                </div>
-            </div>
+
+        <div th:if="${param.error}" class="mt-4 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+            </svg>
+            <span th:text="${param.error}">Error en la operación</span>
         </div>
     </div>
 
-    <!-- Orders Table -->
-    <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
-        <div class="px-6 py-4 border-b border-gray-200">
-            <h2 class="text-lg font-heading font-semibold text-gray-900">Lista de Pedidos</h2>
-        </div>
+    <!-- Tabla -->
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead class="bg-gray-50 border-b border-gray-200">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-heading font-semibold text-gray-700 uppercase tracking-wider">
-                            Nº Pedido
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-heading font-semibold text-gray-700 uppercase tracking-wider">
-                            Cliente
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-heading font-semibold text-gray-700 uppercase tracking-wider">
-                            Dirección
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-heading font-semibold text-gray-700 uppercase tracking-wider">
-                            Fecha
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-heading font-semibold text-gray-700 uppercase tracking-wider">
-                            Total
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-heading font-semibold text-gray-700 uppercase tracking-wider">
-                            Estado
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-heading font-semibold text-gray-700 uppercase tracking-wider">
-                            Acciones
-                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Nº Pedido</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Cliente</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Dirección</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Fecha</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Total</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Estado</th>
+                        <th class="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">Acciones</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200">
+                <tbody class="bg-white divide-y divide-gray-200">
                     <tr th:if="${#lists.isEmpty(orders)}">
                         <td colspan="7" class="px-6 py-12 text-center">
                             <div class="flex flex-col items-center justify-center">
                                 <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                                    <span class="text-4xl text-gray-400">📦</span>
+                                    <span class="text-4xl">📦</span>
                                 </div>
                                 <p class="text-gray-500 text-sm">No hay pedidos registrados</p>
                             </div>
@@ -180,7 +101,7 @@
                     </tr>
                     <tr th:each="order : ${orders}" class="hover:bg-gray-50 transition-colors">
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="text-sm font-heading font-semibold text-gray-900" th:text="'#' + ${order.id}">1</span>
+                            <span class="text-sm font-semibold text-gray-900" th:text="'#' + ${order.id}">1</span>
                         </td>
                         <td class="px-6 py-4">
                             <div class="flex flex-col">
@@ -195,10 +116,10 @@
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="text-sm text-gray-900" th:text="${#dates.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">01/06/2024</span>
+                            <span class="text-sm text-gray-700" th:text="${#dates.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">01/06/2024</span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="text-sm font-heading font-semibold text-gray-900" th:text="${#numbers.formatDecimal(order.total, 1, 2)} + '€'">100.00€</span>
+                            <span class="text-sm font-semibold text-gray-900" th:text="'€' + ${#numbers.formatDecimal(order.total, 1, 2)}">€100.00</span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span th:if="${order.status.name() == 'PENDING'}"
@@ -222,7 +143,7 @@
                                 Enviado
                             </span>
                             <span th:if="${order.status.name() == 'DELIVERED'}"
-                                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
                                 Entregado
                             </span>
                             <span th:if="${order.status.name() == 'CANCELED'}"
@@ -230,12 +151,14 @@
                                 Cancelado
                             </span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center space-x-2">
+                        <td class="px-6 py-4 whitespace-nowrap text-right">
+                            <div class="flex items-center justify-end gap-2">
+                                <!-- Ver Detalles -->
                                 <button onclick="viewOrderDetails(this)"
                                         th:data-order-id="${order.id}"
                                         th:data-order-full-name="${order.fullName}"
-                                        th:data-order-email="${order.user?.email}"
+                                        th:data-order-email="${order.email}"
+                                        th:data-order-phone="${order.phone}"
                                         th:data-order-address="${order.address}"
                                         th:data-order-province="${order.province}"
                                         th:data-order-subtotal="${#numbers.formatDecimal(order.subtotal, 1, 2)}"
@@ -244,22 +167,42 @@
                                         th:data-order-created="${#dates.format(order.createdAt, 'dd/MM/yyyy HH:mm')}"
                                         th:data-order-status="${order.status.name()}"
                                         th:data-order-items="${#lists.size(order.items)}"
-                                        class="px-3 py-1.5 text-xs font-medium text-primary-700 bg-primary-50 hover:bg-primary-100 rounded-md transition-colors">
-                                    Ver Detalles
+                                        class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-primary-700 bg-primary-50 hover:bg-primary-100 rounded-lg transition-all"
+                                        title="Ver detalles">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
                                 </button>
+
+                                <!-- Cambiar Estado -->
                                 <form th:action="@{/admin/orders/updateStatus}" method="post" class="inline">
                                     <input type="hidden" name="orderId" th:value="${order.id}">
                                     <select name="status"
                                             onchange="this.form.submit()"
-                                            class="px-2 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                                            class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all">
                                         <option value="PENDING" th:selected="${order.status.name() == 'PENDING'}">Pendiente</option>
-                                        <option value="PAYMENT" th:selected="${order.status.name() == 'PAYMENT'}">Pago Confirmado</option>
-                                        <option value="CONFIRMED" th:selected="${order.status.name() == 'CONFIRMED'}">Confirmado</option>
                                         <option value="PROCESSING" th:selected="${order.status.name() == 'PROCESSING'}">En Proceso</option>
                                         <option value="SHIPPED" th:selected="${order.status.name() == 'SHIPPED'}">Enviado</option>
                                         <option value="DELIVERED" th:selected="${order.status.name() == 'DELIVERED'}">Entregado</option>
                                         <option value="CANCELED" th:selected="${order.status.name() == 'CANCELED'}">Cancelado</option>
                                     </select>
+                                </form>
+
+                                <!-- Botón Eliminar - Solo para pedidos cancelados o entregados -->
+                                <form th:if="${order.status.name() == 'CANCELED' || order.status.name() == 'DELIVERED'}"
+                                      th:action="@{/admin/orders/deleteOrder}"
+                                      method="post"
+                                      class="inline"
+                                      onsubmit="return confirm('¿Estás seguro de que deseas eliminar este pedido? Esta acción no se puede deshacer.');">
+                                    <input type="hidden" name="orderId" th:value="${order.id}">
+                                    <button type="submit"
+                                            class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-all border border-red-200"
+                                            title="Eliminar pedido">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                    </button>
                                 </form>
                             </div>
                         </td>
@@ -270,17 +213,21 @@
     </div>
 </div>
 
-<!-- Modal de Detalles del Pedido -->
-<div id="orderModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-            <h3 class="text-xl font-heading font-bold text-gray-900">Detalles del Pedido <span id="modalOrderId"></span></h3>
-            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">×</button>
+<!-- Modal de Detalles -->
+<div id="orderModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center rounded-t-xl">
+            <h3 class="text-xl font-bold text-gray-900">Detalles del Pedido <span id="modalOrderId"></span></h3>
+            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
         </div>
         <div class="p-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
-                    <h4 class="text-sm font-heading font-semibold text-gray-700 mb-3">Información del Cliente</h4>
+                    <h4 class="text-sm font-semibold text-gray-700 mb-3">Información del Cliente</h4>
                     <div class="space-y-2">
                         <div>
                             <span class="text-xs text-gray-500">Nombre Completo</span>
@@ -290,10 +237,14 @@
                             <span class="text-xs text-gray-500">Email</span>
                             <p class="text-sm font-medium text-gray-900" id="modalEmail"></p>
                         </div>
+                        <div>
+                            <span class="text-xs text-gray-500">Teléfono</span>
+                            <p class="text-sm font-medium text-gray-900" id="modalPhone"></p>
+                        </div>
                     </div>
                 </div>
                 <div>
-                    <h4 class="text-sm font-heading font-semibold text-gray-700 mb-3">Dirección de Envío</h4>
+                    <h4 class="text-sm font-semibold text-gray-700 mb-3">Dirección de Envío</h4>
                     <div class="space-y-2">
                         <div>
                             <span class="text-xs text-gray-500">Dirección</span>
@@ -308,7 +259,7 @@
             </div>
 
             <div class="border-t border-gray-200 pt-6 mb-6">
-                <h4 class="text-sm font-heading font-semibold text-gray-700 mb-3">Información del Pedido</h4>
+                <h4 class="text-sm font-semibold text-gray-700 mb-3">Información del Pedido</h4>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div>
                         <span class="text-xs text-gray-500">Fecha</span>
@@ -324,13 +275,13 @@
                     </div>
                     <div>
                         <span class="text-xs text-gray-500">Total</span>
-                        <p class="text-sm font-heading font-semibold text-primary-600" id="modalTotal"></p>
+                        <p class="text-sm font-semibold text-primary-600" id="modalTotal"></p>
                     </div>
                 </div>
             </div>
 
             <div class="border-t border-gray-200 pt-6">
-                <h4 class="text-sm font-heading font-semibold text-gray-700 mb-3">Resumen de Pago</h4>
+                <h4 class="text-sm font-semibold text-gray-700 mb-3">Resumen de Pago</h4>
                 <div class="space-y-2 bg-gray-50 rounded-lg p-4">
                     <div class="flex justify-between">
                         <span class="text-sm text-gray-600">Subtotal</span>
@@ -341,8 +292,8 @@
                         <span class="text-sm font-medium text-gray-900" id="modalIva"></span>
                     </div>
                     <div class="flex justify-between pt-2 border-t border-gray-200">
-                        <span class="text-base font-heading font-semibold text-gray-900">Total</span>
-                        <span class="text-base font-heading font-bold text-primary-600" id="modalTotalFinal"></span>
+                        <span class="text-base font-semibold text-gray-900">Total</span>
+                        <span class="text-base font-bold text-primary-600" id="modalTotalFinal"></span>
                     </div>
                 </div>
             </div>
@@ -355,6 +306,7 @@ function viewOrderDetails(button) {
     const orderId = button.getAttribute('data-order-id');
     const fullName = button.getAttribute('data-order-full-name');
     const email = button.getAttribute('data-order-email');
+    const phone = button.getAttribute('data-order-phone');
     const address = button.getAttribute('data-order-address');
     const province = button.getAttribute('data-order-province');
     const subtotal = button.getAttribute('data-order-subtotal');
@@ -366,17 +318,17 @@ function viewOrderDetails(button) {
 
     document.getElementById('modalOrderId').textContent = '#' + orderId;
     document.getElementById('modalFullName').textContent = fullName;
-    document.getElementById('modalEmail').textContent = email;
+    document.getElementById('modalEmail').textContent = email || 'N/A';
+    document.getElementById('modalPhone').textContent = phone || 'N/A';
     document.getElementById('modalAddress').textContent = address;
     document.getElementById('modalProvince').textContent = province;
-    document.getElementById('modalSubtotal').textContent = subtotal + '€';
-    document.getElementById('modalIva').textContent = iva + '€';
-    document.getElementById('modalTotal').textContent = total + '€';
-    document.getElementById('modalTotalFinal').textContent = total + '€';
+    document.getElementById('modalSubtotal').textContent = '€' + subtotal;
+    document.getElementById('modalIva').textContent = '€' + iva;
+    document.getElementById('modalTotal').textContent = '€' + total;
+    document.getElementById('modalTotalFinal').textContent = '€' + total;
     document.getElementById('modalCreated').textContent = created;
     document.getElementById('modalItems').textContent = items;
 
-    // Status translation
     const statusMap = {
         'PENDING': 'Pendiente',
         'PAYMENT': 'Pago Confirmado',
@@ -395,20 +347,15 @@ function closeModal() {
     document.getElementById('orderModal').classList.add('hidden');
 }
 
-// Close modal on click outside
-document.getElementById('orderModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeModal();
-    }
+document.getElementById('orderModal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
 });
 
-// Close modal on ESC key
 document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        closeModal();
-    }
+    if (e.key === 'Escape') closeModal();
 });
 </script>
 
 </body>
 </html>
+

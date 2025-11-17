@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class AdminLoginController {
 
-
 	@GetMapping("/loginAdmin")
 	public String loginAdmin() {
 		return "admin/login-admin";

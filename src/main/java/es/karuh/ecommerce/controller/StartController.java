@@ -42,8 +42,9 @@ public class StartController {
 		return "order-history";
 	}
 
-	@GetMapping("/test-images")
-	public String testImages() {
-		return "test-images";
+	@GetMapping("/order-history")
+	public String orderHistory() {
+		return "order-history";
 	}
+
 }

@@ -34,18 +34,16 @@ public class OrderController {
 	) {
 		List<Order> all = os.getAllOrders();
 
-		// Filtro por estado si se indica
 		List<Order> filtered = all;
 		if (status != null && !status.isBlank() && !"ALL".equalsIgnoreCase(status)) {
 			try {
 				Order.Status st = Order.Status.valueOf(status.toUpperCase(Locale.ROOT));
 				filtered = filtered.stream().filter(o -> o.getStatus() == st).collect(Collectors.toList());
 			} catch (IllegalArgumentException ex) {
-				// estado inválido -> ignorar filtro
+
 			}
 		}
 
-		// Búsqueda por texto (nombre, email, dirección, provincia)
 		if (query != null && !query.isBlank()) {
 			String q = query.toLowerCase(Locale.ROOT);
 			filtered = filtered.stream().filter(o ->
@@ -56,15 +54,13 @@ public class OrderController {
 			).collect(Collectors.toList());
 		}
 
-		// Ordenación por fecha
-		Comparator<Order> cmp = Comparator.comparing(o -> Objects.requireNonNullElse(o.getCreatedAt(), new java.util.Date(0L))); // por si hay null
+		Comparator<Order> cmp = Comparator.comparing(o -> Objects.requireNonNullElse(o.getCreatedAt(), new java.util.Date(0L)));
 		if ("asc".equalsIgnoreCase(sort)) {
 			filtered = filtered.stream().sorted(cmp).collect(Collectors.toList());
 		} else {
 			filtered = filtered.stream().sorted(cmp.reversed()).collect(Collectors.toList());
 		}
 
-		// Contadores
 		long total = filtered.size();
 		long pending = filtered.stream().filter(o -> o.getStatus() == Order.Status.PENDING).count();
 		long processing = filtered.stream().filter(o -> o.getStatus() == Order.Status.PROCESSING).count();
@@ -87,5 +83,16 @@ public class OrderController {
 	                          @RequestParam("status") String status) {
 		os.updateOrderStatus(orderId, Order.Status.valueOf(status));
 		return "redirect:/admin/orders/obtainOrders";
+	}
+	@PostMapping("deleteOrder")
+	public String deleteOrder(@RequestParam("orderId") int orderId, Model model) {
+		String result = os.deleteOrder(orderId);
+
+		if (result.startsWith("error")) {
+			model.addAttribute("errorMessage", result.substring(6)); // Remover "error "
+			return "redirect:/admin/orders/obtainOrders?error=" + result.substring(6);
+		}
+
+		return "redirect:/admin/orders/obtainOrders?success=Pedido eliminado correctamente";
 	}
 }

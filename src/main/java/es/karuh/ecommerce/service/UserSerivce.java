@@ -1,6 +1,5 @@
 package es.karuh.ecommerce.service;
 
-
 import es.karuh.ecommerce.model.User;
 
 import java.util.List;

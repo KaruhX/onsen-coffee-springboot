@@ -11,10 +11,13 @@ import java.util.Map;
 @RestController
 @RequestMapping("api/coffee")
 public class RestCoffee {
-    @Autowired
-    private CoffeeService cs;
+    private final CoffeeService cs;
 
-    @RequestMapping("obtain")
+	public RestCoffee(CoffeeService cs) {
+		this.cs = cs;
+	}
+
+	@RequestMapping("obtain")
     public List<Map<String,Object>> obtainAllCoffee() {
         return cs.getCoffeesJSON();
     }

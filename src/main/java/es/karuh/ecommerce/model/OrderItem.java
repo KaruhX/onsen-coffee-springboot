@@ -14,7 +14,7 @@ public class OrderItem {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "coffee_id")
     private Coffee coffee;
 

@@ -61,7 +61,6 @@ public class SetupImpl implements Setup {
 		listUsers.forEach(em::persist);
 		listCoffees.forEach(em::persist);
 
-		// Crear pedidos de prueba para el usuario 1
 		createTestOrders(listUsers.get(0), listCoffees);
 
 		if (setupTable == null) {
@@ -72,7 +71,7 @@ public class SetupImpl implements Setup {
 	}
 
 	private void createTestOrders(User user, List<Coffee> coffees) {
-		// Pedido 1: Confirmado
+
 		Order order1 = new Order();
 		order1.setUser(user);
 		order1.setFullName("Enner Valencia");
@@ -112,7 +111,6 @@ public class SetupImpl implements Setup {
 		item1_3.setTotalPrice(9.50);
 		em.persist(item1_3);
 
-		// Pedido 2: Confirmado
 		Order order2 = new Order();
 		order2.setUser(user);
 		order2.setFullName("Enner Valencia");
@@ -136,7 +134,6 @@ public class SetupImpl implements Setup {
 		item2_1.setTotalPrice(22.00);
 		em.persist(item2_1);
 
-		// Pedido 3: Confirmado (más reciente)
 		Order order3 = new Order();
 		order3.setUser(user);
 		order3.setFullName("Enner Valencia");

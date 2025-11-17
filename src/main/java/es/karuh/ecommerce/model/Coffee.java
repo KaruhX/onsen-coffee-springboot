@@ -1,9 +1,7 @@
 package es.karuh.ecommerce.model;
 
-
 import jakarta.persistence.*;
 import org.springframework.web.multipart.MultipartFile;
-
 
 @Entity()
 @Table(name = "coffee_products")
@@ -43,7 +41,6 @@ public class Coffee {
 	@Lob
 	@Column(name = "thumbnail", columnDefinition = "LONGBLOB")
 	private byte[] thumbnail;
-
 
 	public Coffee() {
 	}
@@ -134,7 +131,6 @@ public class Coffee {
 		return this;
 	}
 
-
 	public Coffee setCoffee_type(String coffee_type) {
 		this.coffee_type = coffee_type;
 		return this;
@@ -145,12 +141,10 @@ public class Coffee {
 		return this;
 	}
 
-
 	public Coffee setAltitude(int altitude) {
 		this.altitude = altitude;
 		return this;
 	}
-
 
 	public Coffee setBitterness_level(int bitterness_level) {
 		this.bitterness_level = bitterness_level;
@@ -207,7 +201,6 @@ public class Coffee {
 	public void setThumbnail(byte[] thumbnail) {
 		this.thumbnail = thumbnail;
 	}
-
 
 	@Override
 	public String toString() {

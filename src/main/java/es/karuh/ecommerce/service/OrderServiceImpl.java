@@ -19,13 +19,12 @@ public class OrderServiceImpl implements OrderService {
     private EntityManager em;
 
     @Override
-    public String createOrderStep1(int userId, String fullName, String address, String province) {
-        User user = em.find(User.class, userId);
+    public String createOrderStep1(int userId, String fullName, String email, String phone, String address, String province) {
+        var user = em.find(User.class, userId);
         if (user == null) {
             return "error Usuario no encontrado";
         }
 
-        // Obtener items del carrito
         Query q = em.createNativeQuery(SQLConsts.SQL_OBTAIN_CART_PRODUCTS);
         q.setParameter(1, userId);
         @SuppressWarnings("unchecked")
@@ -35,7 +34,6 @@ public class OrderServiceImpl implements OrderService {
             return "error Carrito vacío";
         }
 
-        // Validar stock
         for (Object[] row : results) {
             int stock = ((Number) row[9]).intValue();
             int quantity = ((Number) row[5]).intValue();
@@ -44,33 +42,30 @@ public class OrderServiceImpl implements OrderService {
             }
         }
 
-        // Verificar si ya existe una orden pendiente
         Order existingOrder = getPendingOrder(userId);
         if (existingOrder != null) {
-            // Actualizar orden existente
             existingOrder.setFullName(fullName);
+            existingOrder.setEmail(email);
+            existingOrder.setPhone(phone);
             existingOrder.setAddress(address);
             existingOrder.setProvince(province);
             existingOrder.setStatus(Order.Status.PENDING);
             recalculateOrderTotals(existingOrder, results);
-
-            // Actualizar items
             updateOrderItems(existingOrder, results);
-
             em.merge(existingOrder);
             em.flush();
             return "ok " + existingOrder.getId();
         }
 
-        // Calcular totales
-        double subtotal = calculateSubtotal(results);
-        double iva = subtotal * 0.21;
-        double total = subtotal + iva;
+        var subtotal = calculateSubtotal(results);
+        var iva = subtotal * 0.21;
+        var total = subtotal + iva;
 
-        // Crear nueva orden
         Order order = new Order();
         order.setUser(user);
         order.setFullName(fullName);
+        order.setEmail(email);
+        order.setPhone(phone);
         order.setAddress(address);
         order.setProvince(province);
         order.setSubtotal(subtotal);
@@ -81,25 +76,9 @@ public class OrderServiceImpl implements OrderService {
         em.persist(order);
         em.flush();
 
-        // Crear order items
-        for (Object[] row : results) {
-            int coffeeId = ((Number) row[2]).intValue();
-            double price = ((Number) row[3]).doubleValue();
-            int quantity = ((Number) row[5]).intValue();
+		orderItemFor(order, results);
 
-            Coffee coffee = em.find(Coffee.class, coffeeId);
-            if (coffee == null) continue;
-
-            OrderItem item = new OrderItem();
-            item.setOrder(order);
-            item.setCoffee(coffee);
-            item.setQuantity(quantity);
-            item.setUnitPrice(price);
-            item.setTotalPrice(price * quantity);
-            em.persist(item);
-        }
-
-        em.flush();
+		em.flush();
         return "ok " + order.getId();
     }
 
@@ -133,17 +112,15 @@ public class OrderServiceImpl implements OrderService {
             return "error Debe agregar un método de pago";
         }
 
-        // Validar stock nuevamente antes de confirmar
         for (OrderItem item : order.getItems()) {
-            Coffee coffee = em.find(Coffee.class, item.getCoffee().getId());
+            var coffee = em.find(Coffee.class, item.getCoffee().getId());
             if (coffee.getStock() < item.getQuantity()) {
                 return "error Stock insuficiente para " + coffee.getCoffee_type();
             }
         }
 
-        // Decrementar stock
         for (OrderItem item : order.getItems()) {
-            Coffee coffee = em.find(Coffee.class, item.getCoffee().getId());
+            var coffee = em.find(Coffee.class, item.getCoffee().getId());
             coffee.setStock(coffee.getStock() - item.getQuantity());
             em.merge(coffee);
         }
@@ -151,7 +128,6 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(Order.Status.CONFIRMED);
         em.merge(order);
 
-        // Limpiar carrito
         clearUserCart(userId);
 
         em.flush();
@@ -188,10 +164,9 @@ public class OrderServiceImpl implements OrderService {
                 .getResultList();
     }
 
-
 	@Override
     public String createOrder(int userId, String note, String shippingAddress) {
-        // Método legacy para compatibilidad
+
         User user = em.find(User.class, userId);
         if (user == null) {
             return "error Usuario no encontrado";
@@ -206,7 +181,6 @@ public class OrderServiceImpl implements OrderService {
             return "error Carrito vacío";
         }
 
-        // Validar stock
         for (Object[] row : results) {
             int stock = ((Number) row[9]).intValue();
             int quantity = ((Number) row[5]).intValue();
@@ -229,13 +203,12 @@ public class OrderServiceImpl implements OrderService {
         order.setCreatedAt(new Date());
         em.persist(order);
 
-        // Crear items y decrementar stock
         for (Object[] row : results) {
             int coffeeId = ((Number) row[2]).intValue();
             double price = ((Number) row[3]).doubleValue();
             int quantity = ((Number) row[5]).intValue();
 
-            Coffee coffee = em.find(Coffee.class, coffeeId);
+            var coffee = em.find(Coffee.class, coffeeId);
             if (coffee == null) continue;
 
             coffee.setStock(coffee.getStock() - quantity);
@@ -272,6 +245,27 @@ public class OrderServiceImpl implements OrderService {
 		}
 	}
 
+	@Override
+	public String deleteOrder(int orderId) {
+		Order order = em.find(Order.class, orderId);
+		if (order == null) {
+			return "error Pedido no encontrado";
+		}
+
+		if (order.getStatus() != Order.Status.CANCELED && order.getStatus() != Order.Status.DELIVERED) {
+			return "error Solo se pueden eliminar pedidos cancelados o completados";
+		}
+
+		em.createQuery("DELETE FROM OrderItem oi WHERE oi.order.id = :orderId")
+			.setParameter("orderId", orderId)
+			.executeUpdate();
+
+		em.remove(order);
+		em.flush();
+
+		return "ok Pedido eliminado correctamente";
+	}
+
 	private String obfuscateCreditCard(String cardNumber) {
         String cleaned = cardNumber.replaceAll("[^0-9]", "");
 
@@ -303,31 +297,34 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void updateOrderItems(Order order, List<Object[]> cartItems) {
-        // Eliminar items existentes
+
         em.createQuery("DELETE FROM OrderItem oi WHERE oi.order.id = :orderId")
                 .setParameter("orderId", order.getId())
                 .executeUpdate();
 
-        // Crear nuevos items
-        for (Object[] row : cartItems) {
-            int coffeeId = ((Number) row[2]).intValue();
-            double price = ((Number) row[3]).doubleValue();
-            int quantity = ((Number) row[5]).intValue();
+		orderItemFor(order, cartItems);
+	}
 
-            Coffee coffee = em.find(Coffee.class, coffeeId);
-            if (coffee == null) continue;
+	private void orderItemFor(Order order, List<Object[]> cartItems) {
+		for (Object[] row : cartItems) {
+			int coffeeId = ((Number) row[2]).intValue();
+			double price = ((Number) row[3]).doubleValue();
+			int quantity = ((Number) row[5]).intValue();
 
-            OrderItem item = new OrderItem();
-            item.setOrder(order);
-            item.setCoffee(coffee);
-            item.setQuantity(quantity);
-            item.setUnitPrice(price);
-            item.setTotalPrice(price * quantity);
-            em.persist(item);
-        }
-    }
+			var coffee = em.find(Coffee.class, coffeeId);
+			if (coffee == null) continue;
 
-    private void clearUserCart(int userId) {
+			OrderItem item = new OrderItem();
+			item.setOrder(order);
+			item.setCoffee(coffee);
+			item.setQuantity(quantity);
+			item.setUnitPrice(price);
+			item.setTotalPrice(price * quantity);
+			em.persist(item);
+		}
+	}
+
+	private void clearUserCart(int userId) {
         em.createQuery("UPDATE Cart c SET c.removed = true WHERE c.user.id = :userId AND c.removed = false")
                 .setParameter("userId", userId)
                 .executeUpdate();

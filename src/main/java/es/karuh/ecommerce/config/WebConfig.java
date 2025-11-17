@@ -8,10 +8,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    @Autowired
-    private AdminInterceptor adminInterceptor;
+    private final AdminInterceptor adminInterceptor;
 
-    @Override
+	public WebConfig(AdminInterceptor adminInterceptor) {
+		this.adminInterceptor = adminInterceptor;
+	}
+
+	@Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(adminInterceptor)
                 .addPathPatterns("/admin/**")

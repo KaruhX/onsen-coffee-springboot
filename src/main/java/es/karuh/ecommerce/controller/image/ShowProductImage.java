@@ -68,7 +68,6 @@ public class ShowProductImage {
             }
         }
 
-        // Si no hay imagen, cargar imagen por defecto
         if (info == null || info.length == 0) {
             var defaultImage = getClass().getResourceAsStream("/static/assets/default-coffee.jpg");
             if (defaultImage != null) {

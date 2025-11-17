@@ -1,18 +1,16 @@
-// Cargar pedidos al iniciar
+
 window.addEventListener('DOMContentLoaded', async () => {
-    if (!isUserLoggedIn()) {
+    const getCookie = (name) => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    };
+    const loggedUser = getCookie('loggedUser');
+    if (!loggedUser) {
         window.location.href = '/products';
         return;
     }
-    const userName = getUserName();
-    if (userName) {
-        const ui = document.getElementById('user-info');
-        if (ui) ui.textContent = userName;
-    }
-    document.getElementById('btn-logout')?.addEventListener('click', () => {
-        logout();
-        window.location.href = '/products';
-    });
     await loadOrders();
 });
 
@@ -83,6 +81,8 @@ function createOrderCard(order) {
                 <h4 class="text-sm font-semibold text-gray-900 mb-2">Datos de Envío</h4>
                 <div class="text-sm text-gray-600 space-y-1">
                     <p><span class="font-medium">Destinatario:</span> ${order.fullName || 'N/A'}</p>
+                    <p><span class="font-medium">Email:</span> ${order.email || 'N/A'}</p>
+                    <p><span class="font-medium">Teléfono:</span> ${order.phone || 'N/A'}</p>
                     <p><span class="font-medium">Dirección:</span> ${order.address || 'N/A'}</p>
                     <p><span class="font-medium">Provincia:</span> ${order.province || 'N/A'}</p>
                 </div>

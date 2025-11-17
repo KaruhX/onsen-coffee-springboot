@@ -40,43 +40,38 @@ public class CoffeeServiceImpl implements CoffeeService {
 		}
 	}
 
-
-
 	@Override
 	public void registerCoffee(Coffee coffee) throws IOException {
-		// Procesar imagen principal
+
 		if (coffee.getImage() != null && !coffee.getImage().isEmpty()) {
 			BufferedImage originalImage = ImageIO.read(coffee.getImage().getInputStream());
 			ByteArrayOutputStream outputStream1 = new ByteArrayOutputStream();
 			ImageIO.write(originalImage, "webp", outputStream1);
 			coffee.setImageData(outputStream1.toByteArray());
 
-			// Generar miniatura 80x80 en formato JPEG
 			BufferedImage thumbnail = resizeImage(originalImage, 80, 80);
 			ByteArrayOutputStream thumbnailStream = new ByteArrayOutputStream();
 			ImageIO.write(thumbnail, "jpg", thumbnailStream);
 			coffee.setThumbnail(thumbnailStream.toByteArray());
 		}
 
-		// Procesar imagen 2 si existe
 		if (coffee.getImage2() != null && !coffee.getImage2().isEmpty()) {
 			BufferedImage image2 = ImageIO.read(coffee.getImage2().getInputStream());
 			ByteArrayOutputStream outputStream2 = new ByteArrayOutputStream();
 			ImageIO.write(image2, "webp", outputStream2);
 			coffee.setImageData2(outputStream2.toByteArray());
 		} else if (coffee.getImageData() != null) {
-			// Si no hay imagen 2, copiar la imagen principal
+
 			coffee.setImageData2(coffee.getImageData());
 		}
 
-		// Procesar imagen 3 si existe
 		if (coffee.getImage3() != null && !coffee.getImage3().isEmpty()) {
 			BufferedImage image3 = ImageIO.read(coffee.getImage3().getInputStream());
 			ByteArrayOutputStream outputStream3 = new ByteArrayOutputStream();
 			ImageIO.write(image3, "webp", outputStream3);
 			coffee.setImageData3(outputStream3.toByteArray());
 		} else if (coffee.getImageData() != null) {
-			// Si no hay imagen 3, copiar la imagen principal
+
 			coffee.setImageData3(coffee.getImageData());
 		}
 
@@ -85,21 +80,19 @@ public class CoffeeServiceImpl implements CoffeeService {
 
 	@Override
 	public void updateCoffee(Coffee coffee) throws IOException {
-		// Procesar imagen principal si se proporciona una nueva
+
 		if (coffee.getImage() != null && !coffee.getImage().isEmpty()) {
 			BufferedImage originalImage = ImageIO.read(coffee.getImage().getInputStream());
 			ByteArrayOutputStream outputStream1 = new ByteArrayOutputStream();
 			ImageIO.write(originalImage, "webp", outputStream1);
 			coffee.setImageData(outputStream1.toByteArray());
 
-			// Actualizar miniatura 80x80 en formato JPEG
 			BufferedImage thumbnail = resizeImage(originalImage, 80, 80);
 			ByteArrayOutputStream thumbnailStream = new ByteArrayOutputStream();
 			ImageIO.write(thumbnail, "jpg", thumbnailStream);
 			coffee.setThumbnail(thumbnailStream.toByteArray());
 		}
 
-		// Procesar imagen 2 si se proporciona una nueva
 		if (coffee.getImage2() != null && !coffee.getImage2().isEmpty()) {
 			BufferedImage image2 = ImageIO.read(coffee.getImage2().getInputStream());
 			ByteArrayOutputStream outputStream2 = new ByteArrayOutputStream();
@@ -107,7 +100,6 @@ public class CoffeeServiceImpl implements CoffeeService {
 			coffee.setImageData2(outputStream2.toByteArray());
 		}
 
-		// Procesar imagen 3 si se proporciona una nueva
 		if (coffee.getImage3() != null && !coffee.getImage3().isEmpty()) {
 			BufferedImage image3 = ImageIO.read(coffee.getImage3().getInputStream());
 			ByteArrayOutputStream outputStream3 = new ByteArrayOutputStream();
@@ -116,6 +108,23 @@ public class CoffeeServiceImpl implements CoffeeService {
 		}
 
 		em.merge(coffee);
+	}
+
+	@Override
+	public List<Map<String, Object>> getCoffeesJSON() {
+		Query query = em.createNativeQuery(SQLConsts.SQL_OBTAIN_JSON_COFFEE, Tuple.class);
+		List<Tuple> tuples = query.getResultList();
+
+		List<Map<String, Object>> resultado = new ArrayList<>();
+		for (Tuple tuple : tuples) {
+			Map<String, Object> fila = new HashMap<>();
+			for (TupleElement<?> element : tuple.getElements()) {
+				String normalizedAlias = element.getAlias().toLowerCase();
+				fila.put(normalizedAlias, tuple.get(element));
+			}
+			resultado.add(fila);
+		}
+		return resultado;
 	}
 
 	private BufferedImage resizeImage(BufferedImage original, int width, int height) {
@@ -134,23 +143,6 @@ public class CoffeeServiceImpl implements CoffeeService {
 			case "gif" -> "gif";
 			default -> "jpg";
 		};
-	}
-
-	@Override
-	public List<Map<String, Object>> getCoffeesJSON() {
-		Query query = em.createNativeQuery(SQLConsts.SQL_OBTAIN_JSON_COFFEE, Tuple.class);
-		List<Tuple> tuples = query.getResultList();
-
-		List<Map<String, Object>> resultado = new ArrayList<>();
-		for (Tuple tuple : tuples) {
-			Map<String, Object> fila = new HashMap<>();
-			for (TupleElement<?> element : tuple.getElements()) {
-				String normalizedAlias = element.getAlias().toLowerCase();
-				fila.put(normalizedAlias, tuple.get(element));
-			}
-			resultado.add(fila);
-		}
-		return resultado;
 	}
 
 }

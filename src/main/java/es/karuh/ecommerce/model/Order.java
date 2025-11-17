@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
 @Entity
 @Table(name = "orders")
 public class Order {
@@ -32,9 +31,10 @@ public class Order {
     private User user;
 
 	private String fullName;
+	private String email;
+	private String phone;
 	private String address;
 	private String province;
-
 
     private double subtotal;
     private double iva;
@@ -43,7 +43,6 @@ public class Order {
 	private String creditCardTitular;
 	private String creditCardNumber;
 	private String creditCardType;
-
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
@@ -60,6 +59,22 @@ public class Order {
 
 	public void setFullName(String fullName) {
 		this.fullName = fullName;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
 
 	public String getAddress() {

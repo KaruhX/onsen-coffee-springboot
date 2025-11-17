@@ -4,7 +4,7 @@
 <body class="bg-gray-50 min-h-screen">
 
 <!-- Header con navegación -->
-<nav th:replace="~{fragments/header :: header}"></nav>
+<nav th:replace="~{fragments/public-header :: header}"></nav>
 
     <!-- Contenedor principal -->
     <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
@@ -35,7 +35,6 @@
             })
             .catch(error => console.error('Error cargando template:', error));
 
-        // Función para cambiar imagen
         function changeImage(coffeeId, imageNumber) {
             const mainImage = document.getElementById(`main-image-${coffeeId}`);
             if (!mainImage) return;
@@ -48,7 +47,6 @@
 
             mainImage.src = imageUrls[imageNumber - 1];
 
-            // Actualizar bordes de thumbnails
             for (let i = 1; i <= 3; i++) {
                 const thumb = document.getElementById(`thumb-${i}-${coffeeId}`);
                 if (thumb) {
@@ -63,7 +61,6 @@
             }
         }
 
-        // Función para agregar al carrito
         function addToCartDetail(coffeeId, coffeeName) {
             fetch(`api/cart/add?productId=${coffeeId}&quantity=1`, {
                 method: 'POST',
@@ -87,7 +84,6 @@
             });
         }
 
-        // Función para mostrar notificaciones
         function showNotification(message, type = 'success') {
             const container = document.getElementById('notification-container');
             const notification = document.createElement('div');
@@ -118,7 +114,6 @@
             }, 3000);
         }
 
-        // Cargar detalle del café
         function loadCoffeeDetail() {
             fetch("api/coffee/obtain")
                 .then(response => response.json())
@@ -164,11 +159,9 @@
                         stars: stars
                     };
 
-                    // Renderizar con Mustache
                     const rendered = Mustache.render(COFFEE_DETAIL_TEMPLATE, cafeData);
                     document.getElementById('coffee-detail-container').innerHTML = rendered;
 
-                    // Actualizar título de la página
                     document.title = `${cafe.coffee_type} - Onsen Coffee`;
                 })
                 .catch(error => {

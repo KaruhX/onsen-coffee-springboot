@@ -1,7 +1,21 @@
+const getCookie = (name) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+};
+
+const checkUserLoggedIn = () => {
+    const user = getCookie('loggedUser');
+    return user !== null && user !== "";
+};
+
 let currentStep = 1;
 let cartItems = [];
 let orderData = {
     fullName: '',
+    email: '',
+    phone: '',
     address: '',
     province: '',
     cardHolder: '',
@@ -10,13 +24,20 @@ let orderData = {
 };
 
 window.addEventListener('DOMContentLoaded', async () => {
-    if (!isUserLoggedIn()) {
+    console.log('Checkout page loaded');
+
+    if (!checkUserLoggedIn()) {
+        console.log('User not logged in');
         showError('Debes iniciar sesión para hacer un pedido');
         setTimeout(() => window.location.href = '/products', 2000);
         return;
     }
+
+    console.log('User logged in, loading cart...');
     await loadCart();
+    console.log('Setting up event listeners...');
     setupEventListeners();
+    console.log('Checkout initialized');
 });
 
 async function loadCart() {
@@ -38,49 +59,106 @@ async function loadCart() {
 }
 
 function setupEventListeners() {
-    // Step 1
-    document.getElementById('btn-next-1').addEventListener('click', handleStep1);
+    const btnNext1 = document.getElementById('btn-next-1');
+    const btnNext2 = document.getElementById('btn-next-2');
+    const btnBack1 = document.getElementById('btn-back-1');
+    const btnConfirm = document.getElementById('btn-confirm');
+    const btnBack2 = document.getElementById('btn-back-2');
+    const cardNumber = document.getElementById('cardNumber');
 
-    // Step 2
-    document.getElementById('btn-next-2').addEventListener('click', handleStep2);
-    document.getElementById('btn-back-1').addEventListener('click', () => goToStep(1));
+    console.log('Setting up event listeners...');
+    console.log('btn-next-1 found:', !!btnNext1);
+    console.log('btn-next-2 found:', !!btnNext2);
+    console.log('btn-back-1 found:', !!btnBack1);
+    console.log('btn-confirm found:', !!btnConfirm);
+    console.log('btn-back-2 found:', !!btnBack2);
+    console.log('cardNumber found:', !!cardNumber);
 
-    // Step 3
-    document.getElementById('btn-confirm').addEventListener('click', handleStep3);
-    document.getElementById('btn-back-2').addEventListener('click', () => goToStep(2));
+    if (btnNext1) {
+        btnNext1.addEventListener('click', handleStep1);
+        console.log('Event listener added to btn-next-1');
+    }
 
-    document.getElementById('cardNumber').addEventListener('input', (e) => {
-        let value = e.target.value.replace(/\s/g, '');
-        let formatted = value.match(/.{1,4}/g)?.join(' ') || value;
-        e.target.value = formatted;
-    });
+    if (btnNext2) {
+        btnNext2.addEventListener('click', handleStep2);
+        console.log('Event listener added to btn-next-2');
+    }
+
+    if (btnBack1) {
+        btnBack1.addEventListener('click', () => goToStep(1));
+        console.log('Event listener added to btn-back-1');
+    }
+
+    if (btnConfirm) {
+        btnConfirm.addEventListener('click', handleStep3);
+        console.log('Event listener added to btn-confirm');
+    }
+
+    if (btnBack2) {
+        btnBack2.addEventListener('click', () => goToStep(2));
+        console.log('Event listener added to btn-back-2');
+    }
+
+    if (cardNumber) {
+        cardNumber.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\s/g, '');
+            e.target.value = value.match(/.{1,4}/g)?.join(' ') || value;
+        });
+        console.log('Event listener added to cardNumber');
+    }
 }
 
-async function handleStep1() {
+async function handleStep1(e) {
+    if (e) e.preventDefault();
+    
+    console.log('handleStep1 called');
+
     const fullName = document.getElementById('fullName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
     const address = document.getElementById('address').value.trim();
     const province = document.getElementById('province').value.trim();
 
-    if (!fullName || !address || !province) {
+    console.log('Form values:', { fullName, email, phone, address, province });
+
+    if (!fullName || !email || !phone || !address || !province) {
         showError('Por favor completa todos los campos');
         return;
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        showError('Por favor ingresa un email válido');
+        return;
+    }
+
+    const phoneRegex = /^[0-9]{9,}$/;
+    if (!phoneRegex.test(phone.replace(/\s/g, ''))) {
+        showError('Por favor ingresa un teléfono válido (mínimo 9 dígitos)');
+        return;
+    }
+
+    console.log('Validation passed, sending request...');
     showLoading('btn-next-1');
 
     try {
         const response = await fetch('/api/orders/step1', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ fullName, address, province })
+            body: JSON.stringify({ fullName, email, phone, address, province })
         });
 
+        console.log('Response status:', response.status);
         const result = await response.text();
+        console.log('Response result:', result);
 
         if (result.startsWith('ok')) {
             orderData.fullName = fullName;
+            orderData.email = email;
+            orderData.phone = phone;
             orderData.address = address;
             orderData.province = province;
+            console.log('Moving to step 2');
             goToStep(2);
         } else {
             showError(result.replace('error ', ''));
@@ -93,7 +171,9 @@ async function handleStep1() {
     }
 }
 
-async function handleStep2() {
+async function handleStep2(e) {
+    if (e) e.preventDefault();
+
     const cardHolder = document.getElementById('cardHolder').value.trim();
     const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
     const cardType = document.getElementById('cardType').value;
@@ -140,7 +220,9 @@ async function handleStep2() {
     }
 }
 
-async function handleStep3() {
+async function handleStep3(e) {
+    if (e) e.preventDefault();
+
     showLoading('btn-confirm');
 
     try {
@@ -166,20 +248,19 @@ async function handleStep3() {
 }
 
 function loadConfirmationData() {
-    // Datos de envío
+
     document.getElementById('confirm-name').textContent = orderData.fullName;
+    document.getElementById('confirm-email').textContent = orderData.email;
+    document.getElementById('confirm-phone').textContent = orderData.phone;
     document.getElementById('confirm-addr').textContent = orderData.address;
     document.getElementById('confirm-prov').textContent = orderData.province;
 
-    // Datos de pago
     document.getElementById('confirm-card-type').textContent = orderData.cardType;
     document.getElementById('confirm-card-holder').textContent = orderData.cardHolder;
 
-    // Ofuscar número de tarjeta
     const lastFour = orderData.cardNumber.slice(-4);
     document.getElementById('confirm-card-number').textContent = `•••• •••• •••• ${lastFour}`;
 
-    // Items del carrito
     const itemsContainer = document.getElementById('confirm-items');
     itemsContainer.innerHTML = '';
 
@@ -210,16 +291,14 @@ function loadConfirmationData() {
 }
 
 function goToStep(step) {
-    // Ocultar todos los pasos
+
     document.getElementById('step-1').classList.add('hidden');
     document.getElementById('step-2').classList.add('hidden');
     document.getElementById('step-3').classList.add('hidden');
     document.getElementById('step-success').classList.add('hidden');
 
-    // Mostrar paso actual
     document.getElementById(`step-${step}`).classList.remove('hidden');
 
-    // Actualizar indicadores de progreso
     updateProgressBar(step);
 
     currentStep = step;
@@ -233,17 +312,17 @@ function updateProgressBar(step) {
         const line = document.getElementById(`step-line-${i}`);
 
         if (i < step) {
-            // Completado
+
             circle.className = 'flex items-center justify-center w-10 h-10 rounded-full bg-primary-600 text-white font-semibold text-sm';
             text.className = 'text-sm font-medium text-primary-600';
             if (line) line.className = 'h-1 bg-primary-600 rounded';
         } else if (i === step) {
-            // Actual
+
             circle.className = 'flex items-center justify-center w-10 h-10 rounded-full bg-primary-600 text-white font-semibold text-sm';
             text.className = 'text-sm font-semibold text-primary-600';
             if (line) line.className = 'h-1 bg-gray-200 rounded';
         } else {
-            // Pendiente
+
             circle.className = 'flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 text-gray-500 font-semibold text-sm';
             text.className = 'text-sm text-gray-500';
             if (line) line.className = 'h-1 bg-gray-200 rounded';
@@ -263,6 +342,13 @@ function showSuccess(orderId) {
 function showError(message) {
     const errorAlert = document.getElementById('error-alert');
     const errorMessage = document.getElementById('error-message');
+
+    if (!errorAlert || !errorMessage) {
+        console.error('Error alert elements not found');
+        alert(message);
+        return;
+    }
+
     errorMessage.textContent = message;
     errorAlert.classList.remove('hidden');
     setTimeout(() => errorAlert.classList.add('hidden'), 5000);
@@ -270,12 +356,20 @@ function showError(message) {
 
 function showLoading(buttonId) {
     const button = document.getElementById(buttonId);
+    if (!button) {
+        console.error('Button not found:', buttonId);
+        return;
+    }
     button.disabled = true;
     button.innerHTML = '<svg class="animate-spin h-5 w-5 mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
 }
 
 function hideLoading(buttonId, text) {
     const button = document.getElementById(buttonId);
+    if (!button) {
+        console.error('Button not found:', buttonId);
+        return;
+    }
     button.disabled = false;
     button.innerHTML = text;
 }

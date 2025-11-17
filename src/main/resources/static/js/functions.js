@@ -124,8 +124,10 @@ const mostrarLogin = () => {
             url: "api/users/login",
             method: 'POST',
             contentType: 'application/x-www-form-urlencoded',
+            dataType: 'text',
             data: { mail: email, password: password },
             success: (res) => {
+                console.log('Login response:', res);
                 const [status, ...messageParts] = res.split(" ")
                 const message = messageParts.join(" ")
 
@@ -203,8 +205,10 @@ const mostrarRegistro = () => {
             url: "api/users/register",
             method: 'POST',
             contentType: 'application/x-www-form-urlencoded',
+            dataType: 'text',
             data: { nombre, mail: email, password },
             success: (res) => {
+                console.log('Register response:', res);
                 alert(res)
                 if (res.toLowerCase().includes('éxito') ||
                     res.toLowerCase().includes('exitoso') ||
@@ -357,7 +361,6 @@ const addToCartFromDetail = (coffeeId, coffeeName, price) => {
     })
 }
 
-// Funciones para checkout (realizar pedido)
 const setCheckoutLoading = (loading) => {
     const $btn = $('#btn-checkout')
     const $loading = $('#checkout-loading')
@@ -390,7 +393,7 @@ const realizarPedido = () => {
         contentType: 'application/json',
         data: JSON.stringify({ note: '', shippingAddress: null }),
         success: (res) => {
-            // El backend podría responder con: "ok <orderId>" o un mensaje de error
+
             setCheckoutLoading(false)
             if (!res) {
                 alert('Respuesta inesperada del servidor al crear el pedido')
@@ -402,7 +405,7 @@ const realizarPedido = () => {
 
             if (status === 'ok') {
                 alert('Pedido creado correctamente. ' + (message ? (`ID: ${message}`) : ''))
-                // Refrescar carrito y vista
+
                 mostrarCarrito()
             } else {
                 alert('Error al crear el pedido: ' + message)
@@ -415,6 +418,4 @@ const realizarPedido = () => {
         }
     })
 }
-
-
 

@@ -1,6 +1,5 @@
 package es.karuh.ecommerce.rest;
 
-
 import es.karuh.ecommerce.service.CartService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +25,7 @@ public class RestCart {
 				return "error Usuario no autenticado";
 			}
 
-			int userId = (int) userIdObj;
+			var userId = (int) userIdObj;
 
 			if (quantity <= 0) {
 				return "error La cantidad debe ser mayor a 0";
@@ -51,7 +50,7 @@ public class RestCart {
 		if (userIdObj == null) {
 			return Map.of("error", "Usuario no autenticado");
 		}
-		int userId = (int) userIdObj;
+		var userId = (int) userIdObj;
 		List<Map<String, Object>> items = cs.obtain(userId);
 		return Map.of("items", items);
 	}
@@ -64,7 +63,7 @@ public class RestCart {
 				return "error Usuario no autenticado";
 			}
 
-			int userId = (int) userIdObj;
+			var userId = (int) userIdObj;
 
 			cs.removeProduct(userId, productId);
 			return "ok Producto eliminado del carrito";

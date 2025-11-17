@@ -46,7 +46,6 @@ public class RestOrders {
         return orderService.createOrder(userId, note, shippingAddress);
     }
 
-    // Paso 1: Crear orden con datos de envío
     @PostMapping("/step1")
     public String createOrderStep1(@RequestBody Map<String, String> body, HttpServletRequest req) {
         var userIdObj = req.getSession().getAttribute("userId");
@@ -56,17 +55,18 @@ public class RestOrders {
         int userId = (int) userIdObj;
 
         String fullName = body.get("fullName");
+        String email = body.get("email");
+        String phone = body.get("phone");
         String address = body.get("address");
         String province = body.get("province");
 
-        if (fullName == null || address == null || province == null) {
+        if (fullName == null || email == null || phone == null || address == null || province == null) {
             return "error Datos incompletos";
         }
 
-        return orderService.createOrderStep1(userId, fullName, address, province);
+        return orderService.createOrderStep1(userId, fullName, email, phone, address, province);
     }
 
-    // Paso 2: Agregar método de pago
     @PostMapping("/step2")
     public String addPaymentMethod(@RequestBody Map<String, String> body, HttpServletRequest req) {
         var userIdObj = req.getSession().getAttribute("userId");
@@ -86,7 +86,6 @@ public class RestOrders {
         return orderService.addPaymentMethod(userId, creditCardTitular, creditCardNumber, creditCardType);
     }
 
-    // Paso 3: Confirmar orden
     @PostMapping("/step3")
     public String confirmOrder(HttpServletRequest req) {
         var userIdObj = req.getSession().getAttribute("userId");
@@ -98,7 +97,6 @@ public class RestOrders {
         return orderService.confirmOrder(userId);
     }
 
-    // Obtener orden pendiente
     @GetMapping("/pending")
     public Map<String, Object> getPendingOrder(HttpServletRequest req) {
         var userIdObj = req.getSession().getAttribute("userId");
@@ -120,7 +118,6 @@ public class RestOrders {
         return response;
     }
 
-    // Obtener todas las órdenes del usuario
     @GetMapping("/history")
     public Map<String, Object> getOrderHistory(HttpServletRequest req) {
         var userIdObj = req.getSession().getAttribute("userId");
@@ -142,6 +139,8 @@ public class RestOrders {
         Map<String, Object> map = new HashMap<>();
         map.put("id", order.getId());
         map.put("fullName", order.getFullName());
+        map.put("email", order.getEmail());
+        map.put("phone", order.getPhone());
         map.put("address", order.getAddress());
         map.put("province", order.getProvince());
         map.put("subtotal", order.getSubtotal());
