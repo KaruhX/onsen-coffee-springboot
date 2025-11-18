@@ -1,0 +1,156 @@
+<!-- Breadcrumb -->
+<nav class="flex mb-6 animate-fade-in" aria-label="Breadcrumb">
+    <ol class="inline-flex items-center space-x-2 text-sm">
+        <li class="inline-flex items-center">
+            <a href="/" class="text-gray-600 hover:text-primary-600 transition-colors underline-animation">
+                Home
+            </a>
+        </li>
+        <li>
+            <span class="text-gray-400 mx-2">/</span>
+        </li>
+        <li>
+            <a href="/products" class="text-gray-600 hover:text-primary-600 transition-colors underline-animation">
+                Products
+            </a>
+        </li>
+        <li>
+            <span class="text-gray-400 mx-2">/</span>
+        </li>
+        <li>
+            <span class="text-gray-900 font-medium">{{coffee_type}}</span>
+        </li>
+    </ol>
+</nav>
+
+<!-- Contenedor principal -->
+<div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm animate-slide-up">
+    <div class="grid lg:grid-cols-2 gap-0">
+        <!-- Sección de imágenes -->
+        <div class="bg-gradient-to-br from-primary-50 to-white p-8 lg:p-12">
+            <div class="sticky top-24">
+                <!-- Imagen principal -->
+                <div class="relative aspect-square rounded-xl overflow-hidden bg-white border border-gray-200 mb-6 group">
+                    <img id="main-image-{{id}}"
+                         src="show-image?id={{id}}"
+                         onerror="this.src='/assets/default-coffee.jpg'"
+                         alt="{{coffee_type}}"
+                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+
+                    <!-- Badge de stock -->
+                    {{#highStock}}
+                    <div class="absolute top-4 right-4 animate-scale-in">
+                        <span class="inline-flex items-center px-3 py-1.5 bg-primary-600 text-white text-xs font-semibold rounded-full shadow-lg">
+                            In Stock
+                        </span>
+                    </div>
+                    {{/highStock}}
+                    {{#lowStock}}
+                    <div class="absolute top-4 right-4 animate-scale-in">
+                        <span class="inline-flex items-center px-3 py-1.5 bg-yellow-500 text-white text-xs font-semibold rounded-full shadow-lg">
+                            Low Stock
+                        </span>
+                    </div>
+                    {{/lowStock}}
+                    {{#outOfStock}}
+                    <div class="absolute top-4 right-4 animate-scale-in">
+                        <span class="inline-flex items-center px-3 py-1.5 bg-red-600 text-white text-xs font-semibold rounded-full shadow-lg">
+                            Out of Stock
+                        </span>
+                    </div>
+                    {{/outOfStock}}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de información -->
+        <div class="p-8 lg:p-12">
+            <div class="space-y-6">
+                <!-- Título y origen -->
+                <div class="animate-slide-down">
+                    <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">{{coffee_type}}</h1>
+                    <p class="text-gray-600 flex items-center">
+                        <svg class="w-4 h-4 mr-1 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        {{origin}} - {{altitude}}m
+                    </p>
+                </div>
+
+                <!-- Precio -->
+                <div class="bg-gradient-to-br from-primary-50 to-primary-100/50 rounded-xl p-6 border border-primary-200 animate-scale-in">
+                    <div class="flex items-baseline space-x-2">
+                        <span class="text-4xl lg:text-5xl font-bold text-gray-900">{{price}}</span>
+                        <span class="text-2xl font-semibold text-gray-600">€</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-2 flex items-center">
+                        <svg class="w-4 h-4 mr-1 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        VAT included • Free shipping from €30
+                    </p>
+                </div>
+
+                <!-- Características -->
+                <div class="grid grid-cols-2 gap-4 animate-slide-up">
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-200 hover:border-primary-200 transition-colors">
+                        <p class="text-xs font-medium text-gray-500 mb-1">Altitude</p>
+                        <p class="text-2xl font-bold text-gray-900">{{altitude}}m</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-200 hover:border-primary-200 transition-colors">
+                        <p class="text-xs font-medium text-gray-500 mb-1">Bitterness</p>
+                        <p class="text-2xl font-bold text-gray-900">{{bitterness_level}}/5</p>
+                    </div>
+                </div>
+
+                <!-- Descripción -->
+                <div class="animate-fade-in">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Description
+                    </h3>
+                    <p class="text-gray-600 leading-relaxed">{{description}}</p>
+                </div>
+
+                <!-- Barra de amargura -->
+                <div class="animate-slide-up">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-700">Bitterness Level</span>
+                        <span class="text-sm font-medium text-gray-900">{{bitterness_level}} of 5</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                        <div class="bg-gradient-to-r from-primary-600 to-primary-500 h-2.5 rounded-full transition-all duration-1000 ease-out" style="width: {{bitterness_percentage}}%"></div>
+                    </div>
+                </div>
+
+                <!-- Botón de añadir al carrito -->
+                <div class="pt-4 space-y-3 animate-scale-in">
+                    <button onclick="event.stopPropagation(); addToCartDetail({{id}}, '{{coffee_type}}')"
+                            class="w-full btn-primary bg-primary-600 text-white font-semibold py-4 px-6 rounded-xl hover:bg-primary-700 transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg {{#outOfStock}}opacity-50 cursor-not-allowed{{/outOfStock}}"
+                            {{#outOfStock}}disabled{{/outOfStock}}>
+                        {{#outOfStock}}
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                        <span>Out of Stock</span>
+                        {{/outOfStock}}
+                        {{^outOfStock}}
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        <span>Add to Cart</span>
+                        {{/outOfStock}}
+                    </button>
+
+                    <a href="/products" class="block w-full text-center py-3 px-6 text-gray-700 bg-gray-100 hover:bg-gray-200 font-medium rounded-xl transition-colors">
+                        Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

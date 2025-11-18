@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Onsen Coffee | Café Premium Japonés')}"></head>
+<body class="bg-white">
+<nav th:replace="~{fragments/public-header :: header}"></nav>
+
+<!-- Hero Section -->
+<section class="relative py-24 sm:py-32 overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-primary-50 via-white to-accent-50/30"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(77,154,106,0.08),transparent_50%)]"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(232,128,39,0.05),transparent_50%)]"></div>
+
+    <div class="relative max-w-7xl mx-auto px-4">
+        <div class="text-center max-w-4xl mx-auto">
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-full shadow-sm mb-8">
+                <span class="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></span>
+                <span class="text-sm font-medium text-gray-700">Premium Japanese Coffee</span>
+            </div>
+
+            <h1 class="text-5xl sm:text-6xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+            Find your perfect brew with
+               <span class="text-primary-600">japanese coffee</span>
+            </h1>
+
+            <p class="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+                Japanese-origin coffees grown in sacred mountains, masterfully roasted
+                and delivered directly to your door.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <a href="/products" class="group inline-flex items-center justify-center px-8 py-3.5 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-all shadow-lg hover:shadow-xl hover:scale-105">
+                    Explore Coffees
+                    <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                    </svg>
+                </a>
+                <a href="#about" class="inline-flex items-center justify-center px-8 py-3.5 bg-white text-gray-700 border border-gray-300 rounded-lg font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all">
+                    Our Story
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Características -->
+<section class="py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                Why Onsen Coffee?
+            </h2>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                Every cup tells a story of tradition, quality and passion
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="group relative p-8 rounded-xl border border-gray-200 bg-white hover:border-primary-300 hover:shadow-lg transition-all duration-300">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-500 to-primary-600 rounded-t-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="w-14 h-14 bg-primary-100 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary-600 transition-colors">
+                    <div class="w-6 h-6 bg-primary-600 rounded group-hover:bg-white transition-colors"></div>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-3">Japanese Origin</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Beans grown in the mountains of Japan, where ancient tradition meets modern innovation.
+                </p>
+            </div>
+
+            <div class="group relative p-8 rounded-xl border border-gray-200 bg-white hover:border-primary-300 hover:shadow-lg transition-all duration-300">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-500 to-primary-600 rounded-t-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="w-14 h-14 bg-primary-100 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary-600 transition-colors">
+                    <div class="w-6 h-6 bg-primary-600 rounded group-hover:bg-white transition-colors"></div>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-3">Premium Quality</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    We carefully select each bean to guarantee the highest quality and exceptional flavor.
+                </p>
+            </div>
+
+            <div class="group relative p-8 rounded-xl border border-gray-200 bg-white hover:border-primary-300 hover:shadow-lg transition-all duration-300">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-500 to-primary-600 rounded-t-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="w-14 h-14 bg-primary-100 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary-600 transition-colors">
+                    <div class="w-6 h-6 bg-primary-600 rounded group-hover:bg-white transition-colors"></div>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-3">Guaranteed Freshness</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Freshly roasted and fast delivery so you can enjoy the authentic flavor in every cup.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sobre Nosotros -->
+<section id="about" class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+                <span class="inline-block px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium mb-4">
+                    Our Story
+                </span>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                    The Essence of Japanese Coffee
+                </h2>
+                <p class="text-gray-600 mb-4 leading-relaxed">
+                    Onsen Coffee is born from a passion for coffee and fascination with Japanese culture.
+                    Inspired by the hot springs (onsen) of Japan, where nature and tradition
+                    merge in harmony, we create a unique coffee experience.
+                </p>
+                <p class="text-gray-600 mb-8 leading-relaxed">
+                    Each of our coffees is grown in the mountainous regions of Japan, where
+                    altitude, climate, and volcanic soil create perfect conditions for exceptional beans
+                    with unique flavors and aromas.
+                </p>
+                <a href="/products" class="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors">
+                    Explore Collection
+                </a>
+            </div>
+            <div class="relative">
+                <div class="rounded-lg overflow-hidden border border-gray-200">
+                    <img src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=800&h=800&fit=crop&q=80"
+                         alt="Café japonés"
+                         class="w-full h-full object-cover">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Proceso -->
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                From Origin to Your Cup
+            </h2>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                A careful journey that preserves quality and flavor
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-4 gap-8">
+            <div class="relative">
+                <div class="bg-white rounded-lg border border-gray-200 p-6 h-full hover:border-primary-200 hover:shadow-sm transition-all">
+                    <div class="w-12 h-12 bg-primary-600 text-white rounded-lg flex items-center justify-center text-xl font-bold mb-4">
+                        1
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Cultivation</h3>
+                    <p class="text-gray-600 text-sm">
+                        Beans grown in the Japanese mountains using traditional sustainable methods.
+                    </p>
+                </div>
+            </div>
+
+            <div class="relative">
+                <div class="bg-white rounded-lg border border-gray-200 p-6 h-full hover:border-primary-200 hover:shadow-sm transition-all">
+                    <div class="w-12 h-12 bg-primary-600 text-white rounded-lg flex items-center justify-center text-xl font-bold mb-4">
+                        2
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Selection</h3>
+                    <p class="text-gray-600 text-sm">
+                        Careful manual selection of the best beans to ensure maximum quality.
+                    </p>
+                </div>
+            </div>
+
+            <div class="relative">
+                <div class="bg-white rounded-lg border border-gray-200 p-6 h-full hover:border-primary-200 hover:shadow-sm transition-all">
+                    <div class="w-12 h-12 bg-primary-600 text-white rounded-lg flex items-center justify-center text-xl font-bold mb-4">
+                        3
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Roasting</h3>
+                    <p class="text-gray-600 text-sm">
+                        Artisanal roasting with mastery to enhance the unique flavors of each origin.
+                    </p>
+                </div>
+            </div>
+
+            <div>
+                <div class="bg-white rounded-lg border border-gray-200 p-6 h-full hover:border-primary-200 hover:shadow-sm transition-all">
+                    <div class="w-12 h-12 bg-primary-600 text-white rounded-lg flex items-center justify-center text-xl font-bold mb-4">
+                        4
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Delivery</h3>
+                    <p class="text-gray-600 text-sm">
+                        Fast and secure shipping so you can enjoy maximum freshness at home.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Final -->
+<section class="py-20 bg-primary-600">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+            Start Your Onsen Journey
+        </h2>
+        <p class="text-lg text-primary-50 mb-8">
+            Discover the complete collection of premium Japanese coffees
+        </p>
+        <a href="/products" class="inline-flex items-center px-8 py-3 bg-white text-primary-700 rounded-lg font-semibold hover:bg-primary-50 transition-colors shadow-lg">
+            View All Coffees
+        </a>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<script>
+    LANG = '_en';
+    document.getElementById('mobile-menu-button')?.addEventListener('click', function() {
+        var menu = document.getElementById('mobile-menu');
+        menu?.classList.toggle('hidden');
+    });
+</script>
+</body>
+</html>
