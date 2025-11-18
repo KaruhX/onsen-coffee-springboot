@@ -50,8 +50,8 @@
     <div class="mb-8">
         <div class="flex items-center justify-between space-x-4">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900">Gestión de Usuarios</h1>
-                <p class="text-gray-600 mt-2">Administra los usuarios del sistema</p>
+                <h1 class="text-3xl font-bold text-gray-900" th:text="#{user.management.title}">Gestión de Usuarios</h1>
+                <p class="text-gray-600 mt-2" th:text="#{user.management.subtitle}">Administra los usuarios del sistema</p>
             </div>
             <div>
                 <a th:href="@{/admin/registerUser}"
@@ -59,7 +59,7 @@
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
-                    Registrar Nuevo Usuario
+                    <span th:text="#{user.add.new}">Registrar Nuevo Usuario</span>
                 </a>
             </div>
         </div>
@@ -71,10 +71,10 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">ID</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Nombre</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Email</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Contraseña</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Acciones</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider" th:text="#{user.table.name}">Nombre</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider" th:text="#{user.table.email}">Email</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider" th:text="#{admin.password}">Contraseña</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider" th:text="#{user.table.actions}">Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -109,11 +109,11 @@
                                     <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                     </svg>
-                                    Editar
+                                    <span th:text="#{user.edit}">Editar</span>
                                 </button>
                             </form>
                             <form th:action="@{/admin/deleteUser}" method="post" style="display:inline;"
-                                  onsubmit="return confirm('¿Estás seguro de que deseas eliminar este usuario?');">
+                                  th:attr="onsubmit=|return confirm('#{confirm.delete.user}');|">
                                 <input type="hidden" name="id" th:value="${user.id}"/>
                                 <button type="submit" class="inline-flex items-center text-red-600 hover:text-red-700 transition-colors">
                                     <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

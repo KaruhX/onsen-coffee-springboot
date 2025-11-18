@@ -49,8 +49,8 @@
             <div class="inline-flex items-center justify-center w-16 h-16 bg-primary-600 rounded-xl mb-4 shadow-lg">
                 <div class="w-8 h-8 border-2 border-white rounded"></div>
             </div>
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Panel de Administración</h1>
-            <p class="text-gray-600">Ingrese sus credenciales para continuar</p>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2" th:text="#{admin.titulo}">Panel de Administración</h1>
+            <p class="text-gray-600" th:text="#{admin.subtitulo}">Ingrese sus credenciales para continuar</p>
         </div>
 
         <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
@@ -60,7 +60,7 @@
 
             <form th:action="@{/comprobarPassAdmin}" method="post" class="space-y-5">
                 <div>
-                    <label for="pass" class="block text-sm font-medium text-gray-900 mb-2">
+                    <label for="pass" class="block text-sm font-medium text-gray-900 mb-2" th:text="#{admin.password}">
                         Contraseña
                     </label>
                     <input type="password" id="pass" name="pass" required
@@ -69,19 +69,20 @@
                 </div>
 
                 <button type="submit"
-                        class="w-full bg-primary-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-primary-700 transition-all shadow-sm hover:shadow-md">
+                        class="w-full bg-primary-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-primary-700 transition-all shadow-sm hover:shadow-md"
+                        th:text="#{admin.login.button}">
                     Iniciar Sesión
                 </button>
 
                 <div class="pt-4 text-center">
-                    <a href="/" class="text-sm font-medium text-gray-600 hover:text-gray-900">
+                    <a href="/" class="text-sm font-medium text-gray-600 hover:text-gray-900" th:text="'← ' + #{admin.back.website}">
                         ← Volver al sitio web
                     </a>
                 </div>
             </form>
         </div>
 
-        <p class="text-center text-sm text-gray-500 mt-6">
+        <p class="text-center text-sm text-gray-500 mt-6" th:text="#{admin.footer}">
             © 2025 Onsen Coffee. Panel administrativo.
         </p>
     </div>
