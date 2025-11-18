@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Onsen Coffee | 日本优质咖啡')}"></head>
+<body class="bg-white">
+<nav th:replace="~{fragments/public-header :: header}"></nav>
+
+<!-- Hero Section -->
+<section class="relative py-24 sm:py-32 overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-primary-50 via-white to-accent-50/30"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(77,154,106,0.08),transparent_50%)]"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(232,128,39,0.05),transparent_50%)]"></div>
+
+    <div class="relative max-w-7xl mx-auto px-4">
+        <div class="text-center max-w-4xl mx-auto">
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-full shadow-sm mb-8">
+                <span class="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></span>
+                <span class="text-sm font-medium text-gray-700">日本优质咖啡</span>
+            </div>
+
+            <h1 class="text-5xl sm:text-6xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+                发现日本咖啡的艺术
+            </h1>
+
+            <p class="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+                来自日本圣山的咖啡，精心烘焙，直接送到您家门口。
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <a href="/products"
+                   class="group inline-flex items-center justify-center px-8 py-3.5 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-all shadow-lg hover:shadow-xl hover:scale-105">
+                    探索咖啡
+                    <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none"
+                         stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                    </svg>
+                </a>
+                <a href="#about"
+                   class="inline-flex items-center justify-center px-8 py-3.5 bg-white text-gray-700 border border-gray-300 rounded-lg font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all">
+                    我们的故事
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Características -->
+<section class="py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                为什么选择 Onsen Coffee？
+            </h2>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                每一杯都讲述着传统、品质和激情的故事
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="group relative p-8 rounded-xl border border-gray-200 bg-white hover:border-primary-300 hover:shadow-lg transition-all duration-300">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-500 to-primary-600 rounded-t-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="w-14 h-14 bg-primary-100 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary-600 transition-colors">
+                    <div class="w-6 h-6 bg-primary-600 rounded group-hover:bg-white transition-colors"></div>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-3">日本原产</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    咖啡豆种植在日本山区，古老传统与现代创新相结合。
+                </p>
+            </div>
+
+            <div class="group relative p-8 rounded-xl border border-gray-200 bg-white hover:border-primary-300 hover:shadow-lg transition-all duration-300">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-500 to-primary-600 rounded-t-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="w-14 h-14 bg-primary-100 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary-600 transition-colors">
+                    <div class="w-6 h-6 bg-primary-600 rounded group-hover:bg-white transition-colors"></div>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-3">优质品质</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    我们精心挑选每一颗咖啡豆，以保证最高品质和卓越风味。
+                </p>
+            </div>
+
+            <div class="group relative p-8 rounded-xl border border-gray-200 bg-white hover:border-primary-300 hover:shadow-lg transition-all duration-300">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-500 to-primary-600 rounded-t-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="w-14 h-14 bg-primary-100 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary-600 transition-colors">
+                    <div class="w-6 h-6 bg-primary-600 rounded group-hover:bg-white transition-colors"></div>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-3">保证新鲜</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    新鲜烘焙，快速配送，让您在家享受最大的新鲜度。
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sobre Nosotros -->
+<section id="about" class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+                <span class="inline-block px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium mb-4">
+                    我们的故事
+                </span>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                    日本咖啡的精髓
+                </h2>
+                <p class="text-gray-600 mb-4 leading-relaxed">
+                    Onsen Coffee 源于对咖啡的热爱和对日本文化的迷恋。受日本温泉（onsen）的启发，在那里自然与传统和谐融合，我们创造了独特的咖啡体验。
+                </p>
+                <p class="text-gray-600 mb-8 leading-relaxed">
+                    我们的每一款咖啡都种植在日本的山区，那里的海拔、气候和火山土壤为咖啡豆创造了完美的条件，具有独特的风味和香气。
+                </p>
+                <a href="/products"
+                   class="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors">
+                    探索系列
+                </a>
+            </div>
+            <div class="relative">
+                <div class="rounded-lg overflow-hidden border border-gray-200">
+                    <img src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=800&h=800&fit=crop&q=80"
+                         alt="日本咖啡"
+                         class="w-full h-full object-cover">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Proceso -->
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                从产地到您的杯中
+            </h2>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                精心的旅程，保持品质和风味
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-4 gap-8">
+            <div class="relative">
+                <div class="bg-white rounded-lg border border-gray-200 p-6 h-full hover:border-primary-200 hover:shadow-sm transition-all">
+                    <div class="w-12 h-12 bg-primary-600 text-white rounded-lg flex items-center justify-center text-xl font-bold mb-4">
+                        1
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">种植</h3>
+                    <p class="text-gray-600 text-sm">
+                        咖啡豆使用传统可持续方法在日本山区种植。
+                    </p>
+                </div>
+            </div>
+
+            <div class="relative">
+                <div class="bg-white rounded-lg border border-gray-200 p-6 h-full hover:border-primary-200 hover:shadow-sm transition-all">
+                    <div class="w-12 h-12 bg-primary-600 text-white rounded-lg flex items-center justify-center text-xl font-bold mb-4">
+                        2
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">挑选</h3>
+                    <p class="text-gray-600 text-sm">
+                        精心手工挑选最好的咖啡豆以确保最高品质。
+                    </p>
+                </div>
+            </div>
+
+            <div class="relative">
+                <div class="bg-white rounded-lg border border-gray-200 p-6 h-full hover:border-primary-200 hover:shadow-sm transition-all">
+                    <div class="w-12 h-12 bg-primary-600 text-white rounded-lg flex items-center justify-center text-xl font-bold mb-4">
+                        3
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">烘焙</h3>
+                    <p class="text-gray-600 text-sm">
+                        精湛的手工烘焙，突出每个产地的独特风味。
+                    </p>
+                </div>
+            </div>
+
+            <div>
+                <div class="bg-white rounded-lg border border-gray-200 p-6 h-full hover:border-primary-200 hover:shadow-sm transition-all">
+                    <div class="w-12 h-12 bg-primary-600 text-white rounded-lg flex items-center justify-center text-xl font-bold mb-4">
+                        4
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">配送</h3>
+                    <p class="text-gray-600 text-sm">
+                        快速安全的运送，让您在家享受最大的新鲜度。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Final -->
+<section class="py-20 bg-primary-600">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+            开始您的 Onsen 之旅
+        </h2>
+        <p class="text-lg text-primary-50 mb-8">
+            探索日本优质咖啡的完整系列
+        </p>
+        <a href="/products"
+           class="inline-flex items-center px-8 py-3 bg-white text-primary-700 rounded-lg font-semibold hover:bg-primary-50 transition-colors shadow-lg">
+            查看所有咖啡
+        </a>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<script>
+    document.getElementById('mobile-menu-button')?.addEventListener('click', function () {
+        var menu = document.getElementById('mobile-menu');
+        menu?.classList.toggle('hidden');
+    });
+</script>
+</body>
+</html>
+

@@ -157,8 +157,10 @@ const ProductsModule = {
         $.getJSON("api/coffee/obtain")
             .done((cafes) => {
                 if (!cafes || cafes.length === 0) {
-                    const noCoffeesTitle = (LANG === '_en') ? 'No coffees available' : 'No hay cafés disponibles';
-                    const noCoffeesDesc = (LANG === '_en') ? 'We will soon have new coffees for you' : 'Pronto tendremos nuevos cafés para ti';
+                    const noCoffeesTitle = (LANG === '_en') ? 'No coffees available' :
+                                          (LANG === '_zh') ? '没有可用的咖啡' : 'No hay cafés disponibles';
+                    const noCoffeesDesc = (LANG === '_en') ? 'We will soon have new coffees for you' :
+                                         (LANG === '_zh') ? '我们很快就会有新的咖啡' : 'Pronto tendremos nuevos cafés para ti';
                     $contenedor.html(`
                         <div class="col-span-full text-center py-16">
                             <div class="text-6xl text-gray-300 mb-6">☕</div>
@@ -168,8 +170,10 @@ const ProductsModule = {
                     `)
                     return
                 }
-                let addToCart = (LANG  === '_en') ? 'Add to Cart' : 'Añadir al Carrito';
-                let outOfStockText = (LANG  === '_en') ? 'Out of Stock' : 'Sin Stock';
+                let addToCart = (LANG === '_en') ? 'Add to Cart' :
+                               (LANG === '_zh') ? '加入购物车' : 'Añadir al Carrito';
+                let outOfStockText = (LANG === '_en') ? 'Out of Stock' :
+                                    (LANG === '_zh') ? '缺货' : 'Sin Stock';
                 const cafesConVista = cafes.map(cafe => ({
                     id: cafe.id,
                     coffee_type: cafe.coffee_type,
@@ -197,9 +201,12 @@ const ProductsModule = {
             })
     },
     addToCart(nombreCafe, idCafe) {
-        const loginRequired = (LANG === '_en') ? 'You must log in to purchase' : 'Debes iniciar sesión para comprar';
-        const addedToCart = (LANG === '_en') ? 'added to cart!' : 'añadido al carrito!';
-        const errorAdding = (LANG === '_en') ? 'Error adding to cart' : 'Error al agregar al carrito';
+        const loginRequired = (LANG === '_en') ? 'You must log in to purchase' :
+                             (LANG === '_zh') ? '您必须登录才能购买' : 'Debes iniciar sesión para comprar';
+        const addedToCart = (LANG === '_en') ? 'added to cart!' :
+                           (LANG === '_zh') ? '已加入购物车！' : 'añadido al carrito!';
+        const errorAdding = (LANG === '_en') ? 'Error adding to cart' :
+                           (LANG === '_zh') ? '添加到购物车时出错' : 'Error al agregar al carrito';
 
         if (!AppState.isUserLoggedIn()) {
             Utils.showNotification(loginRequired, 'error')
@@ -213,7 +220,7 @@ const ProductsModule = {
                 const [status, ...messageParts] = data.split(" ")
                 const message = messageParts.join(" ")
                 if (status === "ok") {
-                    Utils.showNotification(`¡${nombreCafe} ${addedToCart}`, 'success')
+                    Utils.showNotification(`${nombreCafe} ${addedToCart}`, 'success')
                     Utils.updateCartCount()
                 } else {
                     Utils.showNotification(`Error: ${message}`, 'error')
@@ -244,10 +251,14 @@ const AuthModule = {
     handleLogin() {
         const email = $("#email").val();
         const password = $("#password").val();
-        const fillAllFields = (LANG === '_en') ? 'Please complete all fields' : 'Por favor completa todos los campos';
-        const welcome = (LANG === '_en') ? 'Welcome' : 'Bienvenido';
-        const invalidCredentials = (LANG === '_en') ? 'Invalid email or password' : 'Usuario o contraseña incorrectos';
-        const loginError = (LANG === '_en') ? 'Error logging in' : 'Error al iniciar sesión';
+        const fillAllFields = (LANG === '_en') ? 'Please complete all fields' :
+                             (LANG === '_zh') ? '请填写所有字段' : 'Por favor completa todos los campos';
+        const welcome = (LANG === '_en') ? 'Welcome' :
+                       (LANG === '_zh') ? '欢迎' : 'Bienvenido';
+        const invalidCredentials = (LANG === '_en') ? 'Invalid email or password' :
+                                  (LANG === '_zh') ? '电子邮件或密码无效' : 'Usuario o contraseña incorrectos';
+        const loginError = (LANG === '_en') ? 'Error logging in' :
+                          (LANG === '_zh') ? '登录时出错' : 'Error al iniciar sesión';
 
         if (!email || !password) {
             Utils.showNotification(fillAllFields, 'error');
@@ -622,7 +633,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.LANG = '';
     }
 
-    const langPath = LANG === '_en' ? '-en' : '';
+    const langPath = LANG === '_en' ? '-en' : LANG === '_zh' ? '-zh' : '';
     const templatePromises = [
         fetch(`mustache-templates${langPath}/coffee-card.html`).then(r => r.text()),
         fetch(`mustache-templates${langPath}/coffee-detail.html`).then(r => r.text()),
@@ -643,7 +654,8 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(error => {
             console.error('Error cargando templates:', error)
-            const errorMsg = (LANG === '_en') ? 'Error loading application' : 'Error al cargar la aplicación';
+            const errorMsg = (LANG === '_en') ? 'Error loading application' :
+                           (LANG === '_zh') ? '加载应用程序时出错' : 'Error al cargar la aplicación';
             Utils.showNotification(errorMsg, 'error')
         })
     setupNavigationListeners()
