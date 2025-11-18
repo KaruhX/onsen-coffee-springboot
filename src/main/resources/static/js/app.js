@@ -157,15 +157,19 @@ const ProductsModule = {
         $.getJSON("api/coffee/obtain")
             .done((cafes) => {
                 if (!cafes || cafes.length === 0) {
+                    const noCoffeesTitle = (LANG === '_en') ? 'No coffees available' : 'No hay cafés disponibles';
+                    const noCoffeesDesc = (LANG === '_en') ? 'We will soon have new coffees for you' : 'Pronto tendremos nuevos cafés para ti';
                     $contenedor.html(`
                         <div class="col-span-full text-center py-16">
                             <div class="text-6xl text-gray-300 mb-6">☕</div>
-                            <h3 class="text-xl font-medium text-gray-600 mb-2">No hay cafés disponibles</h3>
-                            <p class="text-gray-500">Pronto tendremos nuevos cafés para ti</p>
+                            <h3 class="text-xl font-medium text-gray-600 mb-2">${noCoffeesTitle}</h3>
+                            <p class="text-gray-500">${noCoffeesDesc}</p>
                         </div>
                     `)
                     return
                 }
+                let addToCart = (LANG  === '_en') ? 'Add to Cart' : 'Añadir al Carrito';
+                let outOfStockText = (LANG  === '_en') ? 'Out of Stock' : 'Sin Stock';
                 const cafesConVista = cafes.map(cafe => ({
                     id: cafe.id,
                     coffee_type: cafe.coffee_type,
@@ -180,7 +184,7 @@ const ProductsModule = {
                     lowStock: cafe.stock > 0 && cafe.stock <= 10,
                     outOfStock: cafe.stock <= 0,
                     buttonClass: cafe.stock > 0 ? 'bg-primary-600 hover:bg-primary-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed',
-                    buttonText: cafe.stock > 0 ? 'Añadir al Carrito' : 'Sin Stock'
+                    buttonText: cafe.stock > 0 ? addToCart : outOfStockText
                 }))
                 const html = cafesConVista.map(cafe =>
                     Mustache.render(AppState.templates.coffeeCard, cafe)
@@ -193,8 +197,12 @@ const ProductsModule = {
             })
     },
     addToCart(nombreCafe, idCafe) {
+        const loginRequired = (LANG === '_en') ? 'You must log in to purchase' : 'Debes iniciar sesión para comprar';
+        const addedToCart = (LANG === '_en') ? 'added to cart!' : 'añadido al carrito!';
+        const errorAdding = (LANG === '_en') ? 'Error adding to cart' : 'Error al agregar al carrito';
+
         if (!AppState.isUserLoggedIn()) {
-            Utils.showNotification('Debes iniciar sesión para comprar', 'error')
+            Utils.showNotification(loginRequired, 'error')
             return
         }
         $.ajax({
@@ -205,7 +213,7 @@ const ProductsModule = {
                 const [status, ...messageParts] = data.split(" ")
                 const message = messageParts.join(" ")
                 if (status === "ok") {
-                    Utils.showNotification(`¡${nombreCafe} añadido al carrito!`, 'success')
+                    Utils.showNotification(`¡${nombreCafe} ${addedToCart}`, 'success')
                     Utils.updateCartCount()
                 } else {
                     Utils.showNotification(`Error: ${message}`, 'error')
@@ -213,12 +221,11 @@ const ProductsModule = {
             },
             error: (error) => {
                 console.error('Error al agregar al carrito:', error)
-                Utils.showNotification('Error al agregar al carrito', 'error')
+                Utils.showNotification(errorAdding, 'error')
             }
         })
     }
 }
-
 const AuthModule = {
     showLogin() {
         const $contenedor = $("#contenedor")
@@ -237,8 +244,13 @@ const AuthModule = {
     handleLogin() {
         const email = $("#email").val();
         const password = $("#password").val();
+        const fillAllFields = (LANG === '_en') ? 'Please complete all fields' : 'Por favor completa todos los campos';
+        const welcome = (LANG === '_en') ? 'Welcome' : 'Bienvenido';
+        const invalidCredentials = (LANG === '_en') ? 'Invalid email or password' : 'Usuario o contraseña incorrectos';
+        const loginError = (LANG === '_en') ? 'Error logging in' : 'Error al iniciar sesión';
+
         if (!email || !password) {
-            Utils.showNotification('Por favor completa todos los campos', 'error');
+            Utils.showNotification(fillAllFields, 'error');
             return;
         }
 
@@ -256,20 +268,19 @@ const AuthModule = {
                 if (status === "ok") {
                     AppState.setUser(message);
                     this.updateUIAfterLogin(message);
-                    Utils.showNotification(`¡Bienvenido ${message}!`, 'success');
+                    Utils.showNotification(`${welcome} ${message}!`, 'success');
                     $("#login-form")[0].reset();
                     const $contenedor = $("#contenedor");
                     $contenedor.addClass("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8");
                     ProductsModule.loadProducts();
                     Utils.updateNavigation(null);
                 } else {
-
-                    Utils.showNotification(message || 'Usuario o contraseña incorrectos', 'error');
+                    Utils.showNotification(message || invalidCredentials, 'error');
                 }
             },
             error: (error) => {
                 console.error('Error en el login:', error);
-                Utils.showNotification('Error al iniciar sesión', 'error');
+                Utils.showNotification(loginError, 'error');
             }
         });
     },
@@ -292,16 +303,23 @@ const AuthModule = {
         const email = $('input[name="mail"]').val()
         const password = $('input[name="password"]').val()
         const confirmPassword = $('input[name="confirmPassword"]').val()
+
+        const fillAllFields = (LANG === '_en') ? 'Please complete all fields' : 'Por favor completa todos los campos';
+        const passwordMismatch = (LANG === '_en') ? 'Passwords do not match' : 'Las contraseñas no coinciden';
+        const passwordLength = (LANG === '_en') ? 'Password must be at least 6 characters' : 'La contraseña debe tener al menos 6 caracteres';
+        const registerSuccess = (LANG === '_en') ? 'User registered successfully' : 'Usuario registrado exitosamente';
+        const registerError = (LANG === '_en') ? 'Error registering user' : 'Error al registrar usuario';
+
         if (!nombre || !email || !password || !confirmPassword) {
-            Utils.showNotification('Por favor completa todos los campos', 'error')
+            Utils.showNotification(fillAllFields, 'error')
             return
         }
         if (password !== confirmPassword) {
-            Utils.showNotification('Las contraseñas no coinciden', 'error')
+            Utils.showNotification(passwordMismatch, 'error')
             return
         }
         if (password.length < 6) {
-            Utils.showNotification('La contraseña debe tener al menos 6 caracteres', 'error')
+            Utils.showNotification(passwordLength, 'error')
             return
         }
         $.ajax({
@@ -316,20 +334,22 @@ const AuthModule = {
                 const message = messageParts.join(" ");
 
                 if (status === "OK") {
-                    Utils.showNotification('Usuario registrado exitosamente', 'success')
+                    Utils.showNotification(registerSuccess, 'success')
                     $("#register-form")[0].reset()
                     setTimeout(() => this.showLogin(), 1500)
                 } else {
-                    Utils.showNotification(message || 'Error al registrar usuario', 'error')
+                    Utils.showNotification(message || registerError, 'error')
                 }
             },
             error: (error) => {
                 console.error('Error:', error)
-                Utils.showNotification('Error al registrar usuario', 'error')
+                Utils.showNotification(registerError, 'error')
             }
         })
     },
     logout() {
+        const logoutSuccess = (LANG === '_en') ? 'Session closed successfully' : 'Sesión cerrada correctamente';
+
         AppState.clearUser();
         $("#user-info").addClass("hidden");
         $("#user-name").text("");
@@ -337,7 +357,7 @@ const AuthModule = {
         $("#btn-login-mobile, #btn-registro-mobile").removeClass('hidden');
         $("#btn-orders").addClass('hidden');
         $("#btn-orders-mobile").addClass('hidden');
-        Utils.showNotification('Sesión cerrada correctamente', 'info');
+        Utils.showNotification(logoutSuccess, 'info');
         const $contenedor = $("#contenedor");
         $contenedor.addClass("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8");
         ProductsModule.loadProducts();
@@ -356,7 +376,6 @@ const AuthModule = {
         }
     }
 }
-
 const CartModule = {
     showCart() {
         const $contenedor = $("#contenedor")
@@ -415,6 +434,9 @@ const CartModule = {
             })
     },
     removeFromCart(coffeeId) {
+        const productRemoved = (LANG === '_en') ? 'Product removed from cart' : 'Producto eliminado del carrito';
+        const removeError = (LANG === '_en') ? 'Error removing from cart' : 'Error al eliminar del carrito';
+
         $.ajax({
             url: `api/cart/remove?productId=${coffeeId}`,
             method: 'POST',
@@ -423,7 +445,7 @@ const CartModule = {
                 const [status, ...messageParts] = data.split(" ")
                 const message = messageParts.join(" ")
                 if (status === "ok") {
-                    Utils.showNotification('Producto eliminado del carrito', 'success')
+                    Utils.showNotification(productRemoved, 'success')
                     Utils.updateCartCount()
                     this.showCart()
                 } else {
@@ -432,7 +454,7 @@ const CartModule = {
             },
             error: (error) => {
                 console.error('Error al eliminar del carrito:', error)
-                Utils.showNotification('Error al eliminar del carrito', 'error')
+                Utils.showNotification(removeError, 'error')
             }
         })
     }
@@ -460,8 +482,12 @@ const CoffeeDetailModule = {
         })
     },
     addToCartFromDetail(coffeeId, coffeeName, price) {
+        const loginRequired = (LANG === '_en') ? 'You must log in to add products to cart' : 'Debes iniciar sesión para agregar productos al carrito';
+        const addedToCart = (LANG === '_en') ? 'added to cart!' : 'añadido al carrito!';
+        const addError = (LANG === '_en') ? 'Error adding to cart' : 'Error al agregar al carrito';
+
         if (!AppState.isUserLoggedIn()) {
-            Utils.showNotification('Debes iniciar sesión para agregar productos al carrito', 'error')
+            Utils.showNotification(loginRequired, 'error')
             this.closeDetail()
             AuthModule.showLogin()
             return
@@ -474,7 +500,7 @@ const CoffeeDetailModule = {
                 const [status, ...messageParts] = data.split(" ")
                 const message = messageParts.join(" ")
                 if (status === "ok") {
-                    Utils.showNotification(`¡${coffeeName} añadido al carrito!`, 'success')
+                    Utils.showNotification(`¡${coffeeName} ${addedToCart}`, 'success')
                     Utils.updateCartCount()
                 } else {
                     Utils.showNotification(`Error: ${message}`, 'error')
@@ -482,7 +508,7 @@ const CoffeeDetailModule = {
             },
             error: (error) => {
                 console.error('Error al agregar al carrito:', error)
-                Utils.showNotification('Error al agregar al carrito', 'error')
+                Utils.showNotification(addError, 'error')
             }
         })
     }
@@ -532,51 +558,6 @@ function closeDetailIfOutside(event) {
         CoffeeDetailModule.closeDetail()
     }
 }
-let LOGGED_USER = ""
-let currentCoffeeData = null
-
-Object.defineProperty(window, 'LOGGED_USER', {
-    get: () => AppState.getCookie('loggedUser') || "",
-    set: (value) => {
-        if (value) {
-            AppState.setCookie('loggedUser', value, 7)
-        } else {
-            AppState.deleteCookie('loggedUser')
-        }
-    }
-})
-
-document.addEventListener('DOMContentLoaded', () => {
-    const templatePromises = [
-        fetch("mustache-templates/coffee-card.html").then(r => r.text()),
-        fetch("mustache-templates/coffee-detail.html").then(r => r.text()),
-        fetch("mustache-templates/register.html").then(r => r.text()),
-        fetch("mustache-templates/login.html").then(r => r.text()),
-        fetch("mustache-templates/cart.html").then(r => r.text())
-    ]
-    Promise.all(templatePromises)
-        .then(([coffeeCard, coffeeDetail, register, login, cart]) => {
-            AppState.templates.coffeeCard = coffeeCard
-            AppState.templates.coffeeDetail = coffeeDetail
-            AppState.templates.register = register
-            AppState.templates.login = login
-            AppState.templates.cart = cart
-            setTimeout(() => {
-                ProductsModule.loadProducts()
-            }, 500)
-        })
-        .catch(error => {
-            console.error('Error cargando templates:', error)
-            Utils.showNotification('Error al cargar la aplicación', 'error')
-        })
-    setupNavigationListeners()
-
-    if (AppState.isUserLoggedIn()) {
-        const username = AppState.getUser()
-        AuthModule.updateUIAfterLogin(username)
-    }
-})
-
 function setupNavigationListeners() {
     const $btnLogin = $('#btn-login')
     const $btnRegistro = $('#btn-registro')
@@ -621,3 +602,56 @@ function setupNavigationListeners() {
         })
     }
 }
+let LOGGED_USER = ""
+let currentCoffeeData = null
+
+Object.defineProperty(window, 'LOGGED_USER', {
+    get: () => AppState.getCookie('loggedUser') || "",
+    set: (value) => {
+        if (value) {
+            AppState.setCookie('loggedUser', value, 7)
+        } else {
+            AppState.deleteCookie('loggedUser')
+        }
+    }
+})
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Inicializar LANG si no está definida
+    if (typeof LANG === 'undefined') {
+        window.LANG = '';
+    }
+
+    const langPath = LANG === '_en' ? '-en' : '';
+    const templatePromises = [
+        fetch(`mustache-templates${langPath}/coffee-card.html`).then(r => r.text()),
+        fetch(`mustache-templates${langPath}/coffee-detail.html`).then(r => r.text()),
+        fetch(`mustache-templates${langPath}/register.html`).then(r => r.text()),
+        fetch(`mustache-templates${langPath}/login.html`).then(r => r.text()),
+        fetch(`mustache-templates${langPath}/cart.html`).then(r => r.text())
+    ]
+    Promise.all(templatePromises)
+        .then(([coffeeCard, coffeeDetail, register, login, cart]) => {
+            AppState.templates.coffeeCard = coffeeCard
+            AppState.templates.coffeeDetail = coffeeDetail
+            AppState.templates.register = register
+            AppState.templates.login = login
+            AppState.templates.cart = cart
+            setTimeout(() => {
+                ProductsModule.loadProducts()
+            }, 500)
+        })
+        .catch(error => {
+            console.error('Error cargando templates:', error)
+            const errorMsg = (LANG === '_en') ? 'Error loading application' : 'Error al cargar la aplicación';
+            Utils.showNotification(errorMsg, 'error')
+        })
+    setupNavigationListeners()
+
+    if (AppState.isUserLoggedIn()) {
+        const username = AppState.getUser()
+        AuthModule.updateUIAfterLogin(username)
+    }
+})
+
+

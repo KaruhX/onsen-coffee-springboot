@@ -1,4 +1,4 @@
-
+let LANG =  ""
 let LOGGED_USER = "";
 let COFFEE_CARD_TEMPLATE = "";
 let COFFEE_DETAIL_TEMPLATE = "";

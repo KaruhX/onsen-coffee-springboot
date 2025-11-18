@@ -1,6 +1,10 @@
 package es.karuh.ecommerce.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import org.springframework.web.multipart.MultipartFile;
 
 @Entity()
@@ -10,10 +14,17 @@ public class Coffee {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
+
+	@Size(min = 3, max = 50, message = "El nombre del tipo de café debe tener entre 3 y 50 caracteres.")
+	@NotEmpty(message = "El nombre del tipo de café no puede estar vacío.")
+	@Pattern(regexp = "[A-Za-zÁÉÍÓÚáéíóúÑñÜü\\s]+", message = "El nombre del tipo de café solo puede contener letras y espacios.")
 	private String coffee_type;
+
+
 	private String origin;
 	private int altitude;
 	private int bitterness_level;
+	@NotNull(message = "El precio no puede estar vacío.")
 	private double price;
 	private String description;
 	private int stock;

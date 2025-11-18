@@ -2,8 +2,10 @@ package es.karuh.ecommerce.controller.admin;
 
 import es.karuh.ecommerce.model.Coffee;
 import es.karuh.ecommerce.service.CoffeeService;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -44,7 +46,10 @@ public class CoffeeController {
     }
 
     @PostMapping("/saveCoffee")
-    public String saveCoffee(@ModelAttribute("coffee") Coffee coffee, Model model) throws IOException {
+    public String saveCoffee(@ModelAttribute("coffee") @Valid Coffee coffee, BindingResult res, Model model) throws IOException {
+		if (res.hasErrors()) {
+			return "admin/coffee-register";
+		}
         model.addAttribute("coffee", coffee);
         coffeeService.registerCoffee(coffee);
         return "redirect:/admin/obtainCoffee";

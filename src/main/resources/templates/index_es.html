@@ -17,9 +17,9 @@
                 <span class="text-sm font-medium text-gray-700">Café Premium Japonés</span>
             </div>
 
-            <h1 th:text="#{titulo.cafe}" class="text-5xl sm:text-6xl md:text-7xl font-bold text-gray-900 mb-6leading-tight">
-<!--                Descubre el Arte del-->
-<!--                <span class="text-primary-600">Café Japonés</span>-->
+            <h1 class="text-5xl sm:text-6xl md:text-7xl font-bold text-gray-900 mb-6leading-tight">
+                Descubre el Arte del
+                <span class="text-primary-600">Café Japonés</span>
             </h1>
 
             <p class="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed">
@@ -28,13 +28,17 @@
             </p>
 
             <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <a href="/products" class="group inline-flex items-center justify-center px-8 py-3.5 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-all shadow-lg hover:shadow-xl hover:scale-105">
+                <a href="/products"
+                   class="group inline-flex items-center justify-center px-8 py-3.5 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-all shadow-lg hover:shadow-xl hover:scale-105">
                     Explorar Cafés
-                    <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                    <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none"
+                         stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                     </svg>
                 </a>
-                <a href="#about" class="inline-flex items-center justify-center px-8 py-3.5 bg-white text-gray-700 border border-gray-300 rounded-lg font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all">
+                <a href="#about"
+                   class="inline-flex items-center justify-center px-8 py-3.5 bg-white text-gray-700 border border-gray-300 rounded-lg font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all">
                     Nuestra Historia
                 </a>
             </div>
@@ -62,7 +66,8 @@
                 </div>
                 <h3 class="text-2xl font-bold text-gray-900 mb-3">Origen Japonés</h3>
                 <p class="text-gray-600 leading-relaxed">
-                    Granos cultivados en las montañas de Japón, donde la tradición milenaria se encuentra con la innovación moderna.
+                    Granos cultivados en las montañas de Japón, donde la tradición milenaria se encuentra con la
+                    innovación moderna.
                 </p>
             </div>
 
@@ -112,7 +117,8 @@
                     la altitud, el clima y el suelo volcánico crean condiciones perfectas para granos
                     excepcionales con sabores y aromas únicos.
                 </p>
-                <a href="/products" class="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors">
+                <a href="/products"
+                   class="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors">
                     Explorar Colección
                 </a>
             </div>
@@ -200,7 +206,8 @@
         <p class="text-lg text-primary-50 mb-8">
             Descubre la colección completa de cafés premium japoneses
         </p>
-        <a href="/products" class="inline-flex items-center px-8 py-3 bg-white text-primary-700 rounded-lg font-semibold hover:bg-primary-50 transition-colors shadow-lg">
+        <a href="/products"
+           class="inline-flex items-center px-8 py-3 bg-white text-primary-700 rounded-lg font-semibold hover:bg-primary-50 transition-colors shadow-lg">
             Ver Todos los Cafés
         </a>
     </div>
@@ -210,7 +217,7 @@
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 
 <script>
-    document.getElementById('mobile-menu-button')?.addEventListener('click', function() {
+    document.getElementById('mobile-menu-button')?.addEventListener('click', function () {
         var menu = document.getElementById('mobile-menu');
         menu?.classList.toggle('hidden');
     });
