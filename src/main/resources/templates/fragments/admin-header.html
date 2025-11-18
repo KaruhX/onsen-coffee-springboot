@@ -13,13 +13,13 @@
                     <span class="text-sm font-medium text-gray-500 px-2 py-1 bg-gray-100 rounded">Admin</span>
                 </a>
                 <div class="hidden md:flex space-x-1">
-                    <a href="/admin/obtainCoffee" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md transition-colors">
+                    <a href="/admin/obtainCoffee" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md transition-colors" th:text="#{nav.coffees}">
                         Cafés
                     </a>
-                    <a href="/admin/userAdminList" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md transition-colors">
+                    <a href="/admin/userAdminList" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md transition-colors" th:text="#{nav.users}">
                         Usuarios
                     </a>
-                    <a href="/admin/orders/obtainOrders" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md transition-colors">
+                    <a href="/admin/orders/obtainOrders" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md transition-colors" th:text="#{nav.orders}">
                         Pedidos
                     </a>
                 </div>
@@ -28,7 +28,7 @@
                 <a href="/" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
                     Ver Tienda
                 </a>
-                <a href="/logoutAdmin" class="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-md transition-colors">
+                <a href="/logoutAdmin" class="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-md transition-colors" th:text="#{nav.logout}">
                     Cerrar Sesión
                 </a>
             </div>
