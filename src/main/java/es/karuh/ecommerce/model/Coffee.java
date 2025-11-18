@@ -28,7 +28,9 @@ public class Coffee {
 	private double price;
 	private String description;
 	private int stock;
-	@ManyToOne
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "category_id")
 	private Category category;
 
 	@Transient

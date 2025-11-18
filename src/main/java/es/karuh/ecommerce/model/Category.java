@@ -7,15 +7,32 @@ import java.util.List;
 
 @Entity
 public class Category {
-	private String name;
-	private String description;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
-	@OneToMany
+	private String name;
+	private String description;
+
+	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Coffee> coffees = new ArrayList<>();
+
+	public Category() {
+	}
+
+	public Category(String name, String description) {
+		this.name = name;
+		this.description = description;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
 
 	public String getName() {
 		return name;
@@ -33,19 +50,16 @@ public class Category {
 		this.description = description;
 	}
 
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
 	public List<Coffee> getCoffees() {
 		return coffees;
 	}
 
 	public void setCoffees(List<Coffee> coffees) {
 		this.coffees = coffees;
+	}
+
+	public void addCoffee(Coffee coffee) {
+		coffees.add(coffee);
+		coffee.setCategory(this);
 	}
 }

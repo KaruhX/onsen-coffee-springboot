@@ -137,108 +137,48 @@ public class SetupImpl implements Setup {
 		);
 	}
 
-	private List<Coffee> createClassicCoffees() {
+	private List<Coffee> createClassicCoffees(Category category) {
 		return List.of(
-				new Coffee(
-						"Colombia Supremo Huila",
-						"Colombia",
-						1650,
-						3,
-						9.50,
+				createCoffee("Colombia Supremo Huila", "Colombia", 1650, 3, 9.50,
 						"Clásico colombiano con cuerpo medio y equilibrio perfecto. Notas de caramelo, chocolate con leche, y frutas rojas maduras. Acidez brillante y limpia.",
-						30
-				),
-				new Coffee(
-						"Guatemala Antigua SHB",
-						"Guatemala",
-						1550,
-						3,
-						10.50,
+						30, category, "15.jpg"),
+				createCoffee("Guatemala Antigua SHB", "Guatemala", 1550, 3, 10.50,
 						"Café cultivado en suelo volcánico. Cuerpo completo con notas de chocolate amargo, especias dulces, y un toque ahumado característico de la región.",
-						25
-				),
-				new Coffee(
-						"Costa Rica Tarrazú",
-						"Costa Rica",
-						1700,
-						2,
-						11.00,
+						25, category, "30.jpg"),
+				createCoffee("Costa Rica Tarrazú", "Costa Rica", 1700, 2, 11.00,
 						"Café limpio y brillante con acidez cítrica. Notas de miel, almendra, cacao y un final dulce persistente. Perfil clásico centroamericano.",
-						20
-				),
-				new Coffee(
-						"Brazil Santos NY2",
-						"Brasil",
-						1100,
-						2,
-						8.00,
+						20, category, "1.jpg"),
+				createCoffee("Brazil Santos NY2", "Brasil", 1100, 2, 8.00,
 						"Café brasileño suave y dulce. Notas de chocolate, nuez, caramelo y un cuerpo cremoso. Ideal para espresso y bebidas con leche.",
-						35
-				)
+						35, category, "5.jpg")
 		);
 	}
 
-	private List<Coffee> createDarkRoastCoffees() {
+	private List<Coffee> createDarkRoastCoffees(Category category) {
 		return List.of(
-				new Coffee(
-						"Sumatra Mandheling",
-						"Indonesia",
-						1200,
-						5,
-						12.50,
+				createCoffee("Sumatra Mandheling", "Indonesia", 1200, 5, 12.50,
 						"Café procesado húmedo con cuerpo pesado y terroso. Notas de cedro, tabaco, chocolate amargo y hierbas. Baja acidez y sabor intenso.",
-						18
-				),
-				new Coffee(
-						"Sulawesi Toraja",
-						"Indonesia",
-						1400,
-						4,
-						14.00,
+						18, category, "15.jpg"),
+				createCoffee("Sulawesi Toraja", "Indonesia", 1400, 4, 14.00,
 						"Café exótico de Sulawesi con cuerpo denso. Notas de madera de cedro, frutas tropicales maduras, chocolate oscuro y especias.",
-						10
-				),
-				new Coffee(
-						"Vietnam Robusta Premium",
-						"Vietnam",
-						800,
-						5,
-						7.50,
+						10, category, "30.jpg"),
+				createCoffee("Vietnam Robusta Premium", "Vietnam", 800, 5, 7.50,
 						"Robusta de alta calidad con cuerpo intenso. Notas de cacao amargo, frutos secos tostados y un final persistente. Alto contenido de cafeína.",
-						40
-				)
+						40, category, "1.jpg")
 		);
 	}
 
-	private List<Coffee> createLightRoastCoffees() {
+	private List<Coffee> createLightRoastCoffees(Category category) {
 		return List.of(
-				new Coffee(
-						"Rwanda Bourbon Red Mountain",
-						"Ruanda",
-						1900,
-						2,
-						13.50,
+				createCoffee("Rwanda Bourbon Red Mountain", "Ruanda", 1900, 2, 13.50,
 						"Café africano suave con acidez brillante. Notas de frutas cítricas, té negro, caramelo y un final floral delicado.",
-						14
-				),
-				new Coffee(
-						"El Salvador Pacamara",
-						"El Salvador",
-						1500,
-						2,
-						12.00,
+						14, category, "5.jpg"),
+				createCoffee("El Salvador Pacamara", "El Salvador", 1500, 2, 12.00,
 						"Variedad Pacamara con granos grandes. Sabor complejo con notas de frutas tropicales, chocolate blanco, flores y miel de abeja.",
-						16
-				),
-				new Coffee(
-						"Honduras Marcala",
-						"Honduras",
-						1400,
-						3,
-						9.00,
+						16, category, "15.jpg"),
+				createCoffee("Honduras Marcala", "Honduras", 1400, 3, 9.00,
 						"Café hondureño con perfil dulce y equilibrado. Notas de caramelo, almendra, vainilla y frutas secas. Cuerpo medio y acidez suave.",
-						28
-				)
+						28, category, "30.jpg")
 		);
 	}
 
