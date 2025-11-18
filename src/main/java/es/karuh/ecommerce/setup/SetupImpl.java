@@ -6,6 +6,7 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -13,156 +14,388 @@ import java.util.List;
 @Transactional
 public class SetupImpl implements Setup {
 
-	 @PersistenceContext
-	 private EntityManager em;
+	@PersistenceContext
+	private EntityManager em;
+
 	@Override
 	public void runSetup() {
-		SetupTable setupTable = null;
-		try {
-			setupTable = em.createQuery("SELECT s FROM SetupTable s", SetupTable.class).getSingleResult();
-		} catch (Exception e) {
-			System.out.println("Setup not found, creating a new one.");
-		}
-		if (setupTable != null && setupTable.isCompleted()) {
+		SetupTable setupTable = getOrCreateSetupTable();
+
+		if (setupTable.isCompleted()) {
 			return;
 		}
-		var listCoffees = List.of(
-				new Coffee("Colombia Supremo", "Colombia", 1600, 3, 8.50, "Cuerpo medio, notas a chocolate y frutas rojas", 25),
-				new Coffee("Ethiopia Yirgacheffe", "Etiopía", 2000, 2, 12.00, "Aromático, floral y cítrico", 18),
-				new Coffee("Kenya AA", "Kenia", 1800, 4, 11.00, "Acidez brillante, sabor a frutos rojos", 20),
-				new Coffee("Brazil Santos", "Brasil", 900, 2, 7.00, "Suave, con notas a nuez y caramelo", 30),
-				new Coffee("Guatemala Antigua", "Guatemala", 1500, 3, 9.50, "Equilibrado, chocolate y especias", 22),
-				new Coffee("Costa Rica Tarrazú", "Costa Rica", 1700, 3, 10.00, "Limpio, dulce y con acidez brillante", 16),
-				new Coffee("Sumatra Mandheling", "Indonesia", 1200, 5, 13.00, "Cuerpo pesado, notas terrosas y cacao", 12),
-				new Coffee("Panama Geisha", "Panamá", 1800, 1, 25.00, "Exquisito, floral y de alta fragancia", 6),
-				new Coffee("Honduras Marcala", "Honduras", 1400, 2, 8.75, "Dulce, con toques a caramelo y frutos secos", 28),
-				new Coffee("Yemen Mocha", "Yemen", 1900, 4, 18.00, "Intenso, notas a chocolate y frutas secas", 8)
-		);
 
-		var listUsers = List.of(
-				new User("Enner Valencia", "Nelson2000", "a@example.com"),
-				new User("María López", "mariaSecure1", "maria.lopez@example.com"),
-				new User("William Pacho", "williamPass456", "william.pacho@example.com"),
-				new User("Ana Torres", "anaPass789", "ana.torres@example.com"),
-				new User("Carlos Ruiz", "carlosR2025", "carlos.ruiz@example.com"),
-				new User("Lucía Gómez", "lucia!G", "lucia.gomez@example.com"),
-				new User("Diego Fernández", "diego_fern", "diego.fernandez@example.com"),
-				new User("Sofía Morales", "sofiaLoveCoffee", "sofia.morales@example.com"),
-				new User("Mateo Rojas", "mateoR#01", "mateo.rojas@example.com"),
-				new User("Valeria Pérez", "valeriaPwd", "valeria.perez@example.com")
-		);
+		List<Coffee> coffees = createCoffeeProducts();
+		List<User> users = createUsers();
 
-		Cart registerCart = new Cart();
-		registerCart.setUser(listUsers.get(0));
-		registerCart.setCoffee(listCoffees.get(0));
-		registerCart.setQuantity(3);
-		em.persist(registerCart);
+		// Persist all entities
+		persistEntities(coffees, users);
 
-		listUsers.forEach(em::persist);
-		listCoffees.forEach(em::persist);
+		// Create sample data
+		createSampleCart(users.get(0), coffees.get(0));
+		createTestOrders(users.get(0), coffees);
 
-		createTestOrders(listUsers.get(0), listCoffees);
-
-		if (setupTable == null) {
-			setupTable = new SetupTable();
-		}
+		// Mark setup as completed
 		setupTable.setCompleted(true);
 		em.merge(setupTable);
 	}
 
+	// ==================== Setup Helper Methods ====================
+
+	private SetupTable getOrCreateSetupTable() {
+		try {
+			return em.createQuery("SELECT s FROM SetupTable s", SetupTable.class).getSingleResult();
+		} catch (Exception e) {
+			return new SetupTable();
+		}
+	}
+
+	// ==================== Coffee Creation Methods ====================
+
+	private List<Coffee> createCoffeeProducts() {
+		List<Coffee> coffees = new ArrayList<>();
+
+		// CATEGORÍA: Cafés Premium de Origen Único
+		coffees.addAll(createPremiumOriginCoffees());
+
+		// CATEGORÍA: Cafés de Edición Especial
+		coffees.addAll(createSpecialEditionCoffees());
+
+		// CATEGORÍA: Cafés Clásicos y Populares
+		coffees.addAll(createClassicCoffees());
+
+		// CATEGORÍA: Cafés Intensos y Oscuros
+		coffees.addAll(createDarkRoastCoffees());
+
+		// CATEGORÍA: Cafés Suaves y Aromáticos
+		coffees.addAll(createLightRoastCoffees());
+
+		return coffees;
+	}
+
+	private List<Coffee> createPremiumOriginCoffees() {
+		return List.of(
+				new Coffee(
+						"Geisha Panamá Volcán Barú",
+						"Panamá",
+						1800,
+						1,
+						28.50,
+						"Café excepcional con notas florales de jazmín, bergamota y mango. Cultivado en las laderas del volcán Barú, es considerado uno de los mejores cafés del mundo.",
+						8
+				),
+				new Coffee(
+						"Blue Mountain Jamaica",
+						"Jamaica",
+						2100,
+						2,
+						32.00,
+						"Café suave y equilibrado con baja acidez. Notas de chocolate suizo, frutos secos y un final dulce prolongado. Cultivado en las Montañas Azules de Jamaica.",
+						5
+				),
+				new Coffee(
+						"Kona Extra Fancy Hawaii",
+						"Estados Unidos (Hawaii)",
+						900,
+						2,
+						26.00,
+						"Café cultivado en las laderas volcánicas de Hawái. Sabor rico y suave con notas de caramelo, especias y un toque de frutos tropicales.",
+						6
+				)
+		);
+	}
+
+	private List<Coffee> createSpecialEditionCoffees() {
+		return List.of(
+				new Coffee(
+						"Ethiopia Yirgacheffe Natural",
+						"Etiopía",
+						2000,
+						1,
+						14.50,
+						"Proceso natural que realza sus notas frutales. Aromas a arándanos, fresas, vino tinto y un toque floral de jazmín. Acidez brillante y vibrante.",
+						15
+				),
+				new Coffee(
+						"Kenya AA Nyeri",
+						"Kenia",
+						1800,
+						3,
+						13.00,
+						"Café keniano de grado AA con acidez pronunciada y compleja. Notas de grosella negra, tomate cherry, cítricos y un final vinoso.",
+						12
+				),
+				new Coffee(
+						"Yemen Mocha Port",
+						"Yemen",
+						2200,
+						4,
+						22.00,
+						"Café histórico de la cuna del café. Sabor complejo con notas de chocolate oscuro, especias, vino tinto y frutas secas. Perfil único e inigualable.",
+						7
+				)
+		);
+	}
+
+	private List<Coffee> createClassicCoffees() {
+		return List.of(
+				new Coffee(
+						"Colombia Supremo Huila",
+						"Colombia",
+						1650,
+						3,
+						9.50,
+						"Clásico colombiano con cuerpo medio y equilibrio perfecto. Notas de caramelo, chocolate con leche, y frutas rojas maduras. Acidez brillante y limpia.",
+						30
+				),
+				new Coffee(
+						"Guatemala Antigua SHB",
+						"Guatemala",
+						1550,
+						3,
+						10.50,
+						"Café cultivado en suelo volcánico. Cuerpo completo con notas de chocolate amargo, especias dulces, y un toque ahumado característico de la región.",
+						25
+				),
+				new Coffee(
+						"Costa Rica Tarrazú",
+						"Costa Rica",
+						1700,
+						2,
+						11.00,
+						"Café limpio y brillante con acidez cítrica. Notas de miel, almendra, cacao y un final dulce persistente. Perfil clásico centroamericano.",
+						20
+				),
+				new Coffee(
+						"Brazil Santos NY2",
+						"Brasil",
+						1100,
+						2,
+						8.00,
+						"Café brasileño suave y dulce. Notas de chocolate, nuez, caramelo y un cuerpo cremoso. Ideal para espresso y bebidas con leche.",
+						35
+				)
+		);
+	}
+
+	private List<Coffee> createDarkRoastCoffees() {
+		return List.of(
+				new Coffee(
+						"Sumatra Mandheling",
+						"Indonesia",
+						1200,
+						5,
+						12.50,
+						"Café procesado húmedo con cuerpo pesado y terroso. Notas de cedro, tabaco, chocolate amargo y hierbas. Baja acidez y sabor intenso.",
+						18
+				),
+				new Coffee(
+						"Sulawesi Toraja",
+						"Indonesia",
+						1400,
+						4,
+						14.00,
+						"Café exótico de Sulawesi con cuerpo denso. Notas de madera de cedro, frutas tropicales maduras, chocolate oscuro y especias.",
+						10
+				),
+				new Coffee(
+						"Vietnam Robusta Premium",
+						"Vietnam",
+						800,
+						5,
+						7.50,
+						"Robusta de alta calidad con cuerpo intenso. Notas de cacao amargo, frutos secos tostados y un final persistente. Alto contenido de cafeína.",
+						40
+				)
+		);
+	}
+
+	private List<Coffee> createLightRoastCoffees() {
+		return List.of(
+				new Coffee(
+						"Rwanda Bourbon Red Mountain",
+						"Ruanda",
+						1900,
+						2,
+						13.50,
+						"Café africano suave con acidez brillante. Notas de frutas cítricas, té negro, caramelo y un final floral delicado.",
+						14
+				),
+				new Coffee(
+						"El Salvador Pacamara",
+						"El Salvador",
+						1500,
+						2,
+						12.00,
+						"Variedad Pacamara con granos grandes. Sabor complejo con notas de frutas tropicales, chocolate blanco, flores y miel de abeja.",
+						16
+				),
+				new Coffee(
+						"Honduras Marcala",
+						"Honduras",
+						1400,
+						3,
+						9.00,
+						"Café hondureño con perfil dulce y equilibrado. Notas de caramelo, almendra, vainilla y frutas secas. Cuerpo medio y acidez suave.",
+						28
+				)
+		);
+	}
+
+	// ==================== User Creation Methods ====================
+
+	private List<User> createUsers() {
+		return List.of(
+				new User("Enner Valencia", "Nelson2000", "enner.valencia@example.com"),
+				new User("María López García", "mariaSecure1", "maria.lopez@example.com"),
+				new User("William Pacho", "williamPass456", "william.pacho@example.com"),
+				new User("Ana Torres Ruiz", "anaPass789", "ana.torres@example.com"),
+				new User("Carlos Ruiz Mendoza", "carlosR2025", "carlos.ruiz@example.com"),
+				new User("Lucía Gómez Fernández", "lucia!G", "lucia.gomez@example.com"),
+				new User("Diego Fernández Silva", "diego_fern", "diego.fernandez@example.com"),
+				new User("Sofía Morales Castro", "sofiaLoveCoffee", "sofia.morales@example.com"),
+				new User("Mateo Rojas Pérez", "mateoR#01", "mateo.rojas@example.com"),
+				new User("Valeria Pérez Jiménez", "valeriaPwd", "valeria.perez@example.com")
+		);
+	}
+
+	// ==================== Persistence Methods ====================
+
+	private void persistEntities(List<Coffee> coffees, List<User> users) {
+		System.out.println("Persisting " + users.size() + " users...");
+		users.forEach(em::persist);
+
+		System.out.println("Persisting " + coffees.size() + " coffee products...");
+		coffees.forEach(em::persist);
+	}
+
+	private void createSampleCart(User user, Coffee coffee) {
+		Cart sampleCart = new Cart();
+		sampleCart.setUser(user);
+		sampleCart.setCoffee(coffee);
+		sampleCart.setQuantity(3);
+		em.persist(sampleCart);
+		System.out.println("Sample cart created for user: " + user.getNombre());
+	}
+
+	// ==================== Test Orders Creation ====================
+
 	private void createTestOrders(User user, List<Coffee> coffees) {
+		System.out.println("Creating test orders for user: " + user.getNombre());
 
-		Order order1 = new Order();
-		order1.setUser(user);
-		order1.setFullName("Enner Valencia");
-		order1.setAddress("Calle Principal 123");
-		order1.setProvince("Madrid");
-		order1.setSubtotal(37.50);
-		order1.setIva(7.88);
-		order1.setTotal(45.38);
-		order1.setStatus(Order.Status.CONFIRMED);
-		order1.setCreatedAt(new Date(System.currentTimeMillis() - 86400000L * 5)); // 5 días atrás
-		order1.setCreditCardTitular("Enner Valencia");
-		order1.setCreditCardNumber("************1234");
-		order1.setCreditCardType("VISA");
-		em.persist(order1);
+		createOrder1(user, coffees); // Order from 5 days ago
+		createOrder2(user, coffees); // Order from 2 days ago
+		createOrder3(user, coffees); // Order from today
 
-		OrderItem item1_1 = new OrderItem();
-		item1_1.setOrder(order1);
-		item1_1.setCoffee(coffees.get(0)); // Colombia Supremo
-		item1_1.setQuantity(2);
-		item1_1.setUnitPrice(8.50);
-		item1_1.setTotalPrice(17.00);
-		em.persist(item1_1);
+		System.out.println("Test orders created successfully!");
+	}
 
-		OrderItem item1_2 = new OrderItem();
-		item1_2.setOrder(order1);
-		item1_2.setCoffee(coffees.get(1)); // Ethiopia Yirgacheffe
-		item1_2.setQuantity(1);
-		item1_2.setUnitPrice(12.00);
-		item1_2.setTotalPrice(12.00);
-		em.persist(item1_2);
+	/**
+	 * Order 1: Premium coffee order from 5 days ago
+	 * Contains: Geisha Panama, Ethiopia Yirgacheffe, Blue Mountain Jamaica
+	 */
+	private void createOrder1(User user, List<Coffee> coffees) {
+		Order order = new Order();
+		order.setUser(user);
+		order.setFullName("Enner Valencia");
+		order.setAddress("Calle Principal 123, Apto 4B");
+		order.setProvince("Madrid");
+		order.setStatus(Order.Status.CONFIRMED);
+		order.setCreatedAt(new Date(System.currentTimeMillis() - 86400000L * 5)); // 5 días atrás
+		order.setCreditCardTitular("Enner Valencia");
+		order.setCreditCardNumber("************1234");
+		order.setCreditCardType("VISA");
 
-		OrderItem item1_3 = new OrderItem();
-		item1_3.setOrder(order1);
-		item1_3.setCoffee(coffees.get(4)); // Guatemala Antigua
-		item1_3.setQuantity(1);
-		item1_3.setUnitPrice(9.50);
-		item1_3.setTotalPrice(9.50);
-		em.persist(item1_3);
+		// Items for Order 1
+		List<OrderItem> items = List.of(
+				createOrderItem(order, coffees.get(0), 1, 28.50),  // Geisha Panamá
+				createOrderItem(order, coffees.get(3), 2, 14.50),  // Ethiopia Yirgacheffe
+				createOrderItem(order, coffees.get(1), 1, 32.00)   // Blue Mountain Jamaica
+		);
 
-		Order order2 = new Order();
-		order2.setUser(user);
-		order2.setFullName("Enner Valencia");
-		order2.setAddress("Calle Principal 123");
-		order2.setProvince("Madrid");
-		order2.setSubtotal(22.00);
-		order2.setIva(4.62);
-		order2.setTotal(26.62);
-		order2.setStatus(Order.Status.CONFIRMED);
-		order2.setCreatedAt(new Date(System.currentTimeMillis() - 86400000L * 2)); // 2 días atrás
-		order2.setCreditCardTitular("Enner Valencia");
-		order2.setCreditCardNumber("************1234");
-		order2.setCreditCardType("MASTERCARD");
-		em.persist(order2);
+		double subtotal = items.stream().mapToDouble(OrderItem::getTotalPrice).sum();
+		order.setSubtotal(subtotal);
+		order.setIva(subtotal * 0.21);
+		order.setTotal(subtotal + order.getIva());
 
-		OrderItem item2_1 = new OrderItem();
-		item2_1.setOrder(order2);
-		item2_1.setCoffee(coffees.get(2)); // Kenya AA
-		item2_1.setQuantity(2);
-		item2_1.setUnitPrice(11.00);
-		item2_1.setTotalPrice(22.00);
-		em.persist(item2_1);
+		em.persist(order);
+		items.forEach(em::persist);
+	}
 
-		Order order3 = new Order();
-		order3.setUser(user);
-		order3.setFullName("Enner Valencia");
-		order3.setAddress("Calle Principal 123");
-		order3.setProvince("Madrid");
-		order3.setSubtotal(31.00);
-		order3.setIva(6.51);
-		order3.setTotal(37.51);
-		order3.setStatus(Order.Status.CONFIRMED);
-		order3.setCreatedAt(new Date()); // Hoy
-		order3.setCreditCardTitular("Enner Valencia");
-		order3.setCreditCardNumber("************5678");
-		order3.setCreditCardType("VISA");
-		em.persist(order3);
+	/**
+	 * Order 2: Classic coffees order from 2 days ago
+	 * Contains: Kenya AA, Colombia Supremo, Guatemala Antigua
+	 */
+	private void createOrder2(User user, List<Coffee> coffees) {
+		Order order = new Order();
+		order.setUser(user);
+		order.setFullName("Enner Valencia");
+		order.setAddress("Calle Principal 123, Apto 4B");
+		order.setProvince("Madrid");
+		order.setStatus(Order.Status.CONFIRMED);
+		order.setCreatedAt(new Date(System.currentTimeMillis() - 86400000L * 2)); // 2 días atrás
+		order.setCreditCardTitular("Enner Valencia");
+		order.setCreditCardNumber("************1234");
+		order.setCreditCardType("MASTERCARD");
 
-		OrderItem item3_1 = new OrderItem();
-		item3_1.setOrder(order3);
-		item3_1.setCoffee(coffees.get(5)); // Costa Rica Tarrazú
-		item3_1.setQuantity(1);
-		item3_1.setUnitPrice(10.00);
-		item3_1.setTotalPrice(10.00);
-		em.persist(item3_1);
+		// Items for Order 2
+		List<OrderItem> items = List.of(
+				createOrderItem(order, coffees.get(4), 2, 13.00),  // Kenya AA
+				createOrderItem(order, coffees.get(6), 1, 9.50),   // Colombia Supremo
+				createOrderItem(order, coffees.get(7), 1, 10.50)   // Guatemala Antigua
+		);
 
-		OrderItem item3_2 = new OrderItem();
-		item3_2.setOrder(order3);
-		item3_2.setCoffee(coffees.get(3)); // Brazil Santos
-		item3_2.setQuantity(3);
-		item3_2.setUnitPrice(7.00);
-		item3_2.setTotalPrice(21.00);
-		em.persist(item3_2);
+		double subtotal = items.stream().mapToDouble(OrderItem::getTotalPrice).sum();
+		order.setSubtotal(subtotal);
+		order.setIva(subtotal * 0.21);
+		order.setTotal(subtotal + order.getIva());
+
+		em.persist(order);
+		items.forEach(em::persist);
+	}
+
+	/**
+	 * Order 3: Mixed variety order from today
+	 * Contains: Costa Rica Tarrazú, Brazil Santos, Sumatra Mandheling
+	 */
+	private void createOrder3(User user, List<Coffee> coffees) {
+		Order order = new Order();
+		order.setUser(user);
+		order.setFullName("Enner Valencia");
+		order.setAddress("Calle Principal 123, Apto 4B");
+		order.setProvince("Madrid");
+		order.setStatus(Order.Status.CONFIRMED);
+		order.setCreatedAt(new Date()); // Hoy
+		order.setCreditCardTitular("Enner Valencia");
+		order.setCreditCardNumber("************5678");
+		order.setCreditCardType("VISA");
+
+		// Items for Order 3
+		List<OrderItem> items = List.of(
+				createOrderItem(order, coffees.get(8), 2, 11.00),  // Costa Rica Tarrazú
+				createOrderItem(order, coffees.get(9), 3, 8.00),   // Brazil Santos
+				createOrderItem(order, coffees.get(10), 1, 12.50)  // Sumatra Mandheling
+		);
+
+		double subtotal = items.stream().mapToDouble(OrderItem::getTotalPrice).sum();
+		order.setSubtotal(subtotal);
+		order.setIva(subtotal * 0.21);
+		order.setTotal(subtotal + order.getIva());
+
+		em.persist(order);
+		items.forEach(em::persist);
+	}
+
+	/**
+	 * Helper method to create an order item
+	 */
+	private OrderItem createOrderItem(Order order, Coffee coffee, int quantity, double unitPrice) {
+		OrderItem item = new OrderItem();
+		item.setOrder(order);
+		item.setCoffee(coffee);
+		item.setQuantity(quantity);
+		item.setUnitPrice(unitPrice);
+		item.setTotalPrice(unitPrice * quantity);
+		return item;
 	}
 }

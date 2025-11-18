@@ -28,6 +28,9 @@ public class Coffee {
 	private double price;
 	private String description;
 	private int stock;
+	@ManyToOne
+	private Category category;
+
 	@Transient
 	private MultipartFile image;
 
@@ -75,6 +78,14 @@ public class Coffee {
 		this.price = price;
 		this.description = description;
 		this.stock = stock;
+	}
+
+	public Category getCategory() {
+		return category;
+	}
+
+	public void setCategory(Category category) {
+		this.category = category;
 	}
 
 	public MultipartFile getImage() {
