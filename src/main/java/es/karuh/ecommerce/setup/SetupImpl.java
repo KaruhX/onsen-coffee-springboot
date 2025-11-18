@@ -6,6 +6,14 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -17,27 +25,39 @@ public class SetupImpl implements Setup {
 	@PersistenceContext
 	private EntityManager em;
 
+	private static final String ASSETS_PATH = "src/main/resources/static/assets/";
+
 	@Override
 	public void runSetup() {
 		SetupTable setupTable = getOrCreateSetupTable();
 
 		if (setupTable.isCompleted()) {
+			System.out.println("Setup already completed. Skipping initialization.");
 			return;
 		}
 
-		List<Coffee> coffees = createCoffeeProducts();
+		System.out.println("Starting database setup...");
+
+		// Create categories first
+		List<Category> categories = createCategories();
+		categories.forEach(em::persist);
+		System.out.println("Categories created: " + categories.size());
+
+		List<Coffee> coffees = createCoffeeProducts(categories);
 		List<User> users = createUsers();
 
 		// Persist all entities
 		persistEntities(coffees, users);
 
 		// Create sample data
-		createSampleCart(users.get(0), coffees.get(0));
-		createTestOrders(users.get(0), coffees);
+		createSampleCart(users.getFirst(), coffees.getFirst());
+		createTestOrders(users.getFirst(), coffees);
 
 		// Mark setup as completed
 		setupTable.setCompleted(true);
 		em.merge(setupTable);
+
+		System.out.println("Database setup completed successfully!");
 	}
 
 	// ==================== Setup Helper Methods ====================
@@ -50,90 +70,110 @@ public class SetupImpl implements Setup {
 		}
 	}
 
-	// ==================== Coffee Creation Methods ====================
+	// ==================== Category Creation Methods ====================
 
-	private List<Coffee> createCoffeeProducts() {
-		List<Coffee> coffees = new ArrayList<>();
-
-		// CATEGORÍA: Cafés Premium de Origen Único
-		coffees.addAll(createPremiumOriginCoffees());
-
-		// CATEGORÍA: Cafés de Edición Especial
-		coffees.addAll(createSpecialEditionCoffees());
-
-		// CATEGORÍA: Cafés Clásicos y Populares
-		coffees.addAll(createClassicCoffees());
-
-		// CATEGORÍA: Cafés Intensos y Oscuros
-		coffees.addAll(createDarkRoastCoffees());
-
-		// CATEGORÍA: Cafés Suaves y Aromáticos
-		coffees.addAll(createLightRoastCoffees());
-
-		return coffees;
-	}
-
-	private List<Coffee> createPremiumOriginCoffees() {
+	private List<Category> createCategories() {
 		return List.of(
-				new Coffee(
-						"Geisha Panamá Volcán Barú",
-						"Panamá",
-						1800,
-						1,
-						28.50,
-						"Café excepcional con notas florales de jazmín, bergamota y mango. Cultivado en las laderas del volcán Barú, es considerado uno de los mejores cafés del mundo.",
-						8
-				),
-				new Coffee(
-						"Blue Mountain Jamaica",
-						"Jamaica",
-						2100,
-						2,
-						32.00,
-						"Café suave y equilibrado con baja acidez. Notas de chocolate suizo, frutos secos y un final dulce prolongado. Cultivado en las Montañas Azules de Jamaica.",
-						5
-				),
-				new Coffee(
-						"Kona Extra Fancy Hawaii",
-						"Estados Unidos (Hawaii)",
-						900,
-						2,
-						26.00,
-						"Café cultivado en las laderas volcánicas de Hawái. Sabor rico y suave con notas de caramelo, especias y un toque de frutos tropicales.",
-						6
-				)
+				new Category("Premium Origin", "Cafés excepcionales de origen único con características extraordinarias"),
+				new Category("Special Edition", "Ediciones limitadas y cafés exóticos de regiones especiales"),
+				new Category("Classic", "Cafés clásicos y populares de las mejores regiones cafeteras"),
+				new Category("Dark Roast", "Cafés intensos con tueste oscuro y cuerpo robusto"),
+				new Category("Light Roast", "Cafés suaves con tueste claro y perfiles aromáticos delicados")
 		);
 	}
 
-	private List<Coffee> createSpecialEditionCoffees() {
+	// ==================== Image Helper Methods ====================
+
+	private byte[] loadImageFromAssets(String imageName) {
+		try {
+			String imagePath = ASSETS_PATH + imageName;
+			File imageFile = new File(imagePath);
+			if (imageFile.exists()) {
+				return Files.readAllBytes(Paths.get(imagePath));
+			} else {
+				System.out.println("Image not found: " + imagePath + ", using default");
+				return Files.readAllBytes(Paths.get(ASSETS_PATH + "default-coffee.jpg"));
+			}
+		} catch (IOException e) {
+			System.err.println("Error loading image: " + imageName);
+			return null;
+		}
+	}
+
+	private byte[] createThumbnail(byte[] imageData) {
+		try {
+			BufferedImage originalImage = ImageIO.read(new java.io.ByteArrayInputStream(imageData));
+			BufferedImage thumbnail = new BufferedImage(80, 80, BufferedImage.TYPE_INT_RGB);
+			Graphics2D g = thumbnail.createGraphics();
+			g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+			g.drawImage(originalImage, 0, 0, 80, 80, null);
+			g.dispose();
+
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ImageIO.write(thumbnail, "jpg", baos);
+			return baos.toByteArray();
+		} catch (IOException e) {
+			System.err.println("Error creating thumbnail");
+			return imageData;
+		}
+	}
+
+	private void setImagesForCoffee(Coffee coffee, String imageName) {
+		byte[] imageData = loadImageFromAssets(imageName);
+		if (imageData != null) {
+			coffee.setImageData(imageData);
+			coffee.setImageData2(imageData);
+			coffee.setImageData3(imageData);
+			coffee.setThumbnail(createThumbnail(imageData));
+		}
+	}
+
+	private Coffee createCoffee(String type, String origin, int altitude, int bitterness,
+	                            double price, String description, int stock,
+	                            Category category, String imageName) {
+		Coffee coffee = new Coffee(type, origin, altitude, bitterness, price, description, stock);
+		coffee.setCategory(category);
+		setImagesForCoffee(coffee, imageName);
+		return coffee;
+	}
+
+	// ==================== Coffee Creation Methods ====================
+
+	private List<Coffee> createCoffeeProducts(List<Category> categories) {
+		List<Coffee> coffees = new ArrayList<>();
+		coffees.addAll(createPremiumOriginCoffees(categories.get(0)));
+		coffees.addAll(createSpecialEditionCoffees(categories.get(1)));
+		coffees.addAll(createClassicCoffees(categories.get(2)));
+		coffees.addAll(createDarkRoastCoffees(categories.get(3)));
+		coffees.addAll(createLightRoastCoffees(categories.get(4)));
+		return coffees;
+	}
+
+	private List<Coffee> createPremiumOriginCoffees(Category category) {
 		return List.of(
-				new Coffee(
-						"Ethiopia Yirgacheffe Natural",
-						"Etiopía",
-						2000,
-						1,
-						14.50,
+				createCoffee("Geisha Panamá Volcán Barú", "Panamá", 1800, 1, 28.50,
+						"Café excepcional con notas florales de jazmín, bergamota y mango. Cultivado en las laderas del volcán Barú, es considerado uno de los mejores cafés del mundo.",
+						8, category, "1.jpg"),
+				createCoffee("Blue Mountain Jamaica", "Jamaica", 2100, 2, 32.00,
+						"Café suave y equilibrado con baja acidez. Notas de chocolate suizo, frutos secos y un final dulce prolongado. Cultivado en las Montañas Azules de Jamaica.",
+						5, category, "5.jpg"),
+				createCoffee("Kona Extra Fancy Hawaii", "Estados Unidos (Hawaii)", 900, 2, 26.00,
+						"Café cultivado en las laderas volcánicas de Hawái. Sabor rico y suave con notas de caramelo, especias y un toque de frutos tropicales.",
+						6, category, "15.jpg")
+		);
+	}
+
+	private List<Coffee> createSpecialEditionCoffees(Category category) {
+		return List.of(
+				createCoffee("Ethiopia Yirgacheffe Natural", "Etiopía", 2000, 1, 14.50,
 						"Proceso natural que realza sus notas frutales. Aromas a arándanos, fresas, vino tinto y un toque floral de jazmín. Acidez brillante y vibrante.",
-						15
-				),
-				new Coffee(
-						"Kenya AA Nyeri",
-						"Kenia",
-						1800,
-						3,
-						13.00,
+						15, category, "30.jpg"),
+				createCoffee("Kenya AA Nyeri", "Kenia", 1800, 3, 13.00,
 						"Café keniano de grado AA con acidez pronunciada y compleja. Notas de grosella negra, tomate cherry, cítricos y un final vinoso.",
-						12
-				),
-				new Coffee(
-						"Yemen Mocha Port",
-						"Yemen",
-						2200,
-						4,
-						22.00,
+						12, category, "1.jpg"),
+				createCoffee("Yemen Mocha Port", "Yemen", 2200, 4, 22.00,
 						"Café histórico de la cuna del café. Sabor complejo con notas de chocolate oscuro, especias, vino tinto y frutas secas. Perfil único e inigualable.",
-						7
-				)
+						7, category, "5.jpg")
 		);
 	}
 
