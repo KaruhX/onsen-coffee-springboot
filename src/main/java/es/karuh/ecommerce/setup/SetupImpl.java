@@ -38,10 +38,14 @@ public class SetupImpl implements Setup {
 
 		System.out.println("Starting database setup...");
 
-		// Create categories first
+		// Create and persist categories first
 		List<Category> categories = createCategories();
-		categories.forEach(em::persist);
-		System.out.println("Categories created: " + categories.size());
+		System.out.println("Persisting " + categories.size() + " categories...");
+		for (Category category : categories) {
+			em.persist(category);
+			em.flush(); // Ensure category is persisted before using it
+		}
+		System.out.println("Categories created successfully!");
 
 		List<Coffee> coffees = createCoffeeProducts(categories);
 		List<User> users = createUsers();

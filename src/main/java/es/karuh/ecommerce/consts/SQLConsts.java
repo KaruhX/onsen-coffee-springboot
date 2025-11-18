@@ -1,7 +1,7 @@
 package es.karuh.ecommerce.consts;
 
 public class SQLConsts {
-	public static final String SQL_OBTAIN_JSON_COFFEE = "SELECT c.id, c.coffee_type, c.origin, c.altitude, c.bitterness_level, c.price, c.description, c.stock FROM coffee_products c";
+	public static final String SQL_OBTAIN_JSON_COFFEE = "SELECT c.id, c.coffee_type, c.origin, c.altitude, c.bitterness_level, c.price, c.description, c.stock, cat.name as category_name, cat.id as category_id FROM coffee_products c LEFT JOIN category cat ON c.category_id = cat.id";
 	public static final String SQL_OBTAIN_CART_PRODUCTS = "SELECT "
 			+ "cart.user_id, cp.coffee_type, cp.id AS coffee_id, cp.price, cp.description, cart.quantity, cp.origin, cp.altitude, cp.bitterness_level, cp.stock "
 			+ "FROM cart "
